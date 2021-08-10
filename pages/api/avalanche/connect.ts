@@ -1,22 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { getAvalancheClient } from 'utils/avalanche-utils';
-import { AvalancheConnectReponse } from 'types/avalanche-types';
+import { getAvalancheClient } from '@avax/utils'
+import { AvalancheConnectResponse } from '@avax/types'
 
 export default function connect(
   req: NextApiRequest,
-  res: NextApiResponse<AvalancheConnectReponse>
+  res: NextApiResponse<AvalancheConnectResponse>
 ) {
   const client = getAvalancheClient()
   const info = client.Info()
 
-  info.getNodeVersion()
-    .then(response => {
+  info
+    .getNodeVersion()
+    .then((response) => {
       res.status(200).json(response)
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err)
-      res.status(500).json("Error connecting to Avalanche")
-    });
-
+      res.status(500).json('Error connecting to Avalanche')
+    })
 }
