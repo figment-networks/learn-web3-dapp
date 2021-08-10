@@ -5,10 +5,10 @@ import Sidebar from "components/shared/Sidebar";
 import Step from "components/shared/Step";
 import { ChainType } from "types/types";
 import { useSteps } from "hooks/steps-hooks";
-import Connect from "./steps/1_Connect";
-import Account from "./steps/2_Account";
-import Query from "./steps/3_Query";
-import TransferX from "./steps/5_Transfer_X";
+import Connect from "./steps/Connect";
+import Account from "./steps/Account";
+import Query from "./steps/Query";
+import TransferX from "./steps/Transfer_X";
 import { AvalancheKeypairType } from "types/avalanche-types";
 
 const { Text, Paragraph } = Typography;
