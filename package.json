@@ -12,7 +12,13 @@
     "near:build:contract:debug": "node contracts/near/compile.js --debug",
     "near:test": "cd contracts/near && cargo test -- --nocapture && cd -",
     "near:test:verbose": "yarn near:build:contract:debug && cd contracts/near && cargo test -v -- --nocapture && cd -",
-    "truffle-polygon": "yarn global add truffle && cd ./contracts/polygon/SimpleStorage && yarn && truffle obtain --solc 0.8.0"
+    "truffle-polygon": "yarn global add truffle && cd ./contracts/polygon/SimpleStorage && yarn && truffle obtain --solc 0.8.0",
+    "secret:init": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && source $HOME/.cargo/env && yarn secret:tools",
+    "secret:tools": "rustup default stable && rustup target list --installed && rustup target add wasm32-unknown-unknown && rustup install nightly && rustup target add wasm32-unknown-unknown --toolchain nightly && yarn secret:cargo-generate",
+    "secret:cargo-generate": "cargo install cargo-generate --features vendored-openssl && yarn secret:contract",
+    "secret:contract": "cd contracts/secret && cargo generate --git https://github.com/enigmampc/secret-template --name mysimplecounter",
+    "secret:test": "cd contracts/secret/mysimplecounter && cargo test",
+    "secret:compile": "cd contracts/secret/mysimplecounter && cargo wasm && cargo schema"
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.2",

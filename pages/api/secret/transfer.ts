@@ -12,12 +12,13 @@ export default async function connect(
         const { mnemonic, txAmount }= req.body
         console.log(url)
         console.log(mnemonic)
+        console.log(txAmount)
 
         const signingPen = await Secp256k1Pen.fromMnemonic(mnemonic)
         const pubkey = encodeSecp256k1Pubkey(signingPen.pubkey);
         const address = pubkeyToAddress(pubkey, 'secret');
 
-        // 1. Initialise client
+        // 1. Initialize client
         const txEncryptionSeed = EnigmaUtils.GenerateNewSeed();
         const fees = {
           send: {
@@ -36,7 +37,7 @@ export default async function connect(
         const rcpt = address; // Set recipient to sender for testing, or generate another account as you did previously.
         const memo = 'sendTokens example'; // optional memo
         const sent = await client.sendTokens(rcpt, [{ 
-          amount: '1000000', 
+          amount: txAmount, 
           denom: 'uscrt' 
         }], memo) // Send 1 SCRT / 1_000_000 uscrt
           
@@ -49,6 +50,6 @@ export default async function connect(
         res.status(200).json(hash)
     } catch(error) {
         console.log(error)
-        res.status(500).json('transfert failed')
+        res.status(500).json('Error transferring uSCRT')
     }
 }
