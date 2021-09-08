@@ -27,9 +27,9 @@ const Change = () => {
 		axios
 			.post(`/api/celo/swap`, state)
 			.then(res => {
-                const hash = res.data.hash
+                const txHash = res.data.txHash
                 const celo = res.data.celo
-                setTxHash(hash)
+                setTxHash(txHash)
                 setCelo(celo)
 				setFetching(false)
 			})
