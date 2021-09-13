@@ -19,11 +19,11 @@ const Restore = () => {
   const restore = () => {
     console.log(value);
     try {
-      const wallet = undefined;
+      const wallet = ethers.Wallet.fromMnemonic(value.trim())
       const selectedAddress = window.ethereum.selectedAddress;
-      if (undefined === selectedAddress) {
-        setAddress(undefined);
-        setSecret(undefined);
+      if (wallet.address.toLocaleLowerCase() === selectedAddress) {
+        setAddress(wallet.address.toLocaleLowerCase())
+        setSecret(wallet.privateKey.toLocaleLowerCase())
       } else {
         setError('Unable to restore account');
       }
