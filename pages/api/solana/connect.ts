@@ -11,7 +11,7 @@ export default async function connect(
     const url = getNodeURL(network);
     const connection = undefined;
     const version = undefined;
-    res.status(200).json(version['solana-core']);
+    res.status(200).json(version?.['solana-core']);
   } catch (error) {
     res.status(500).json(error.message);
   }
