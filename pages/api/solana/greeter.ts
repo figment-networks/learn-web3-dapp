@@ -5,6 +5,8 @@ import {
   SystemProgram,
   Transaction,
   sendAndConfirmTransaction,
+  CreateAccountWithSeedParams,
+  Signer,
 } from '@solana/web3.js';
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {getNodeURL} from '@solana/lib';
@@ -49,7 +51,11 @@ export default async function greeter(
     const GREETING_SEED = 'hello';
 
     // Are there any methods from PublicKey to derive a public key from a seed?
-    const greetedPubkey = await PublicKey.undefined;
+    const greetedPubkey = await PublicKey.createWithSeed(
+      payer.publicKey,
+      GREETING_SEED,
+      programId,
+    );
 
     // This function calculates the fees we have to pay to keep the newly
     // created account alive on the blockchain. We're naming it lamports because
@@ -60,10 +66,28 @@ export default async function greeter(
 
     // Find which instructions are expected and complete SystemProgram with
     // the required arguments.
-    const transaction = new Transaction().add(SystemProgram.undefined);
+    const params: CreateAccountWithSeedParams = {
+      fromPubkey: payer.publicKey,
+      newAccountPubkey: greetedPubkey,
+      basePubkey: payer.publicKey,
+      seed: GREETING_SEED,
+      lamports: lamports,
+      space: GREETING_SIZE,
+      programId: programId,
+    };
+
+    const transaction = new Transaction().add(
+      SystemProgram.createAccountWithSeed(params),
+    );
+
+    const signers: Array<Signer> = [payer];
 
     // Complete this function call with the expected arguments.
-    const hash = await sendAndConfirmTransaction(undefined);
+    const hash = await sendAndConfirmTransaction(
+      connection,
+      transaction,
+      signers,
+    );
     res.status(200).json({
       hash: hash,
       greeter: greetedPubkey.toBase58(),
