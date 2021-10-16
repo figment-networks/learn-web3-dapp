@@ -10,8 +10,8 @@ export default async function balance(
     const {network, address} = req.body;
     const url = getNodeURL(network);
     const connection = new Connection(url, 'confirmed');
-    const publicKey = undefined;
-    const balance = undefined;
+    const publicKey = new PublicKey(address);
+    const balance = await connection.getBalance(publicKey);
     if (balance === 0 || balance === undefined) {
       throw new Error('Account not funded');
     }
