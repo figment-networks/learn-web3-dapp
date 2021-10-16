@@ -6,6 +6,8 @@ import {
   SystemProgram,
   Transaction,
   sendAndConfirmTransaction,
+  Signer,
+  TransferParams,
 } from '@solana/web3.js';
 
 export default async function transfer(
@@ -24,15 +26,30 @@ export default async function transfer(
 
     //... let's snip the beginning as it should be familiar for you by now!
     // Find the parameter to pass
-    const instructions = SystemProgram.transfer;
+    const transferParams: TransferParams = {
+      fromPubkey,
+      toPubkey,
+      lamports,
+    };
+    const instructions = SystemProgram.transfer(transferParams);
 
     // How could you construct a signer array's
-    const signers = undefined;
+    const signer: Signer = {
+      publicKey: fromPubkey,
+      secretKey: secretKey,
+    };
+    const signers: Array<Signer> = [signer];
 
     // Maybe adding something to a Transaction could be interesting ?
-    const transaction = new Transaction();
+    const transaction = new Transaction().add(instructions);
 
-    const hash = res.status(200).json(hash); // You should know what is expected here.
+    const hash = await sendAndConfirmTransaction(
+      connection,
+      transaction,
+      signers,
+    );
+
+    res.status(200).json(hash); // You should know what is expected here.
   } catch (error) {
     let errorMessage = error instanceof Error ? error.message : 'Unknown Error';
     res.status(500).json(errorMessage);
