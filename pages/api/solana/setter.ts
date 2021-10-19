@@ -5,6 +5,9 @@ import {
   TransactionInstruction,
   Transaction,
   sendAndConfirmTransaction,
+  TransactionInstructionCtorFields,
+  AccountMeta,
+  Signer,
 } from '@solana/web3.js';
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {getNodeURL} from '@solana/lib';
@@ -26,13 +29,39 @@ export default async function setter(
 
     // this your turn to figure out
     // how to create this instruction
-    const instruction = new TransactionInstruction(undefined);
+    const keys: AccountMeta = {
+      pubkey: greeterPublicKey,
+      isSigner: false,
+      isWritable: true,
+    };
+
+    const opts: TransactionInstructionCtorFields = {
+      keys: [keys],
+      programId: programKey,
+      data: Buffer.alloc(0),
+    };
+
+    const instruction = new TransactionInstruction(opts);
 
     // this your turn to figure out
     // how to create this transaction
-    const hash = await sendAndConfirmTransaction(undefined);
 
-    res.status(200).json(undefined);
+    const transaction = new Transaction();
+    transaction.add(instruction);
+
+    const signer: Signer = {
+      publicKey: payerKeypair.publicKey,
+      secretKey: payerKeypair.secretKey,
+    };
+    const signers: Array<Signer> = [signer];
+
+    const hash = await sendAndConfirmTransaction(
+      connection,
+      transaction,
+      signers,
+    );
+
+    res.status(200).json(hash);
   } catch (error) {
     console.error(error);
     res.status(500).json('Get balance failed');
