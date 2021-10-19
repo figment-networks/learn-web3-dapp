@@ -8,9 +8,9 @@ export default async function connect(
 ) {
   try {
     const url = await getSafeUrl();
-    const client = undefined;
-    const nodeInfo = undefined;
-    const version = undefined;
+    const client = new CosmWasmClient(url);
+    const nodeInfo = await client.restClient.nodeInfo();
+    const version = nodeInfo.application_version.version;
     res.status(200).json(version);
   } catch (error) {
     console.log(error);

@@ -11,10 +11,10 @@ export default async function connect(
   res: NextApiResponse<ResponseT | string>,
 ) {
   try {
-    const mnemonic = undefined;
-    const signingPen = await undefined;
-    const pubkey = undefined;
-    const address = undefined;
+    const mnemonic = Bip39.encode(Random.getBytes(16)).toString();
+    const signingPen = await Secp256k1Pen.fromMnemonic(mnemonic);
+    const pubkey = encodeSecp256k1Pubkey(signingPen.pubkey);
+    const address = pubkeyToAddress(pubkey, 'secret');
     res.status(200).json({mnemonic, address});
   } catch (error) {
     console.log(error);
