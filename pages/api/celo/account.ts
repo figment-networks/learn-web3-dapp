@@ -13,9 +13,9 @@ export default async function connect(
   try {
     const url = getSafeUrl();
     const kit = newKit(url);
-    const account = kit.web3.eth.accounts.create();
-    const address = account.address;
-    const secret = account.privateKey;
+    const account = undefined;
+    const address = undefined;
+    const secret = undefined;
 
     res.status(200).json({
       address,
