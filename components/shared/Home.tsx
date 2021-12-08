@@ -33,6 +33,7 @@ const Home = () => {
           <Col span={8}>
             <ChainRow title={'Data Indexing'}>
               <Protocol chain={CHAINS.THE_GRAPH} />
+              <Protocol chain={CHAINS.THE_GRAPH_NEAR} />
             </ChainRow>
           </Col>
 

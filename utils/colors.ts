@@ -24,6 +24,8 @@ const getPrimaryColor = (chainId: CHAINS) => {
     return '#e84141';
   } else if (chainId === CHAINS.THE_GRAPH) {
     return 'linear-gradient(130deg, #5943d0, #151324)';
+  } else if (chainId === CHAINS.THE_GRAPH_NEAR) {
+    return 'linear-gradient(130deg, #5943d0, #151324)';
   } else if (chainId === CHAINS.POLYGON) {
     return '#966ae0';
   } else if (chainId === CHAINS.POLKADOT) {
@@ -48,6 +50,8 @@ const getSecondaryColor = (chainId: CHAINS) => {
   } else if (chainId === CHAINS.AVALANCHE) {
     return '#F6F6F6';
   } else if (chainId === CHAINS.THE_GRAPH) {
+    return '#F6F6F6';
+  } else if (chainId === CHAINS.THE_GRAPH_NEAR) {
     return '#F6F6F6';
   } else if (chainId === CHAINS.POLYGON) {
     return '#F6F6F6';

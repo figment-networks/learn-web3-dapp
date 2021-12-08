@@ -16,6 +16,7 @@ We will guide you through using the various blockchain JavaScript SDKs to intera
 - ✅ Celo
 - ✅ Ceramic
 - ✅ The Graph
+- ✅ The Graph for NEAR
 - 🔜 Arweave
 - 🔜 Chainlink
 - 🔜 Pyth

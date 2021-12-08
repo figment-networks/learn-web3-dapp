@@ -20,7 +20,9 @@ import {
   CERAMIC_PROTOCOLS,
   CERAMIC_NETWORKS,
   THE_GRAPH_PROTOCOLS,
+  THE_GRAPH_NEAR_PROTOCOLS,
   THE_GRAPH_NETWORKS,
+  THE_GRAPH_NEAR_NETWORKS,
   ARWEAVE_PROTOCOLS,
   ARWEAVE_NETWORKS,
 } from 'types';
@@ -533,6 +535,55 @@ export const CHAINS_CONFIG: ChainsType = {
       {
         id: PROTOCOL_STEPS_ID.GRAPH_NODE,
         title: 'Run a local Graph node',
+      },
+      {
+        id: PROTOCOL_STEPS_ID.SUBGRAPH_SCAFFOLD,
+        title: 'Create a subgraph scaffold',
+      },
+      {
+        id: PROTOCOL_STEPS_ID.SUBGRAPH_MANIFEST,
+        title: 'Tweak the Manifest',
+      },
+      {
+        id: PROTOCOL_STEPS_ID.SUBGRAPH_SCHEMA,
+        title: 'Define the schema',
+      },
+      {
+        id: PROTOCOL_STEPS_ID.SUBGRAPH_MAPPINGS,
+        title: 'Implement the mappings',
+      },
+      {
+        id: PROTOCOL_STEPS_ID.SUBGRAPH_QUERY,
+        title: 'Query the subgraph',
+      },
+      {
+        id: PROTOCOL_STEPS_ID.FINAL,
+        title: '🎓 Pathway complete!',
+        isOneColumn: true,
+      },
+    ],
+  },
+  [CHAINS.THE_GRAPH_NEAR]: {
+    id: CHAINS.THE_GRAPH_NEAR,
+    label: 'The Graph for Near',
+    active: true,
+    logoUrl: 'https://cryptologos.cc/logos/near-protocol-near-logo.svg?v=010',
+    protocol: THE_GRAPH_NEAR_PROTOCOLS.GRAPHQL,
+    network: THE_GRAPH_NEAR_NETWORKS.HOSTED,
+    steps: [
+      {
+        id: PROTOCOL_STEPS_ID.PREFACE,
+        title: 'Welcome to the The Graph for NEAR Pathway',
+        isOneColumn: true,
+      },
+      {
+        id: PROTOCOL_STEPS_ID.PROJECT_SETUP,
+        title: 'Introduction',
+        isOneColumn: true,
+      },
+      {
+        id: PROTOCOL_STEPS_ID.GRAPH_NODE,
+        title: 'The Graph hosted service',
       },
       {
         id: PROTOCOL_STEPS_ID.SUBGRAPH_SCAFFOLD,

@@ -25,7 +25,8 @@
       "@figment-secret/*": ["components/protocols/secret/*"],
       "@figment-polygon/*": ["components/protocols/polygon/*"],
       "@figment-ceramic/*": ["components/protocols/ceramic/*"],
-      "@figment-the-graph/*": ["components/protocols/the_graph/*"]
+      "@figment-the-graph/*": ["components/protocols/the_graph/*"],
+      "@figment-the-graph-near/*": ["components/protocols/the_graph_near/*"]
     },
     "incremental": true
   },
