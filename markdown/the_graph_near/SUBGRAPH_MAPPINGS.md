@@ -357,7 +357,7 @@ What do those three commands do?
 
 Now if you visit your subgraph in your dashboard, you can click on the Logs and see it starting to scan the NEAR mainnet for logs emitted by the functions in the did.near contract.
 
-![terminal](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph/mapping-01.gif)
+![terminal](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/mapping-01.gif)
 
 ## ✅ Make sure it works
 
