@@ -10,7 +10,7 @@ const {Text} = Typography;
 
 const Mapping = () => {
   const {state, dispatch} = useGlobalState();
-  const [isValid, setIsValid] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<boolean>(true);
   const [fetching, setFetching] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const {primaryColor, secondaryColor} = useColors(state);

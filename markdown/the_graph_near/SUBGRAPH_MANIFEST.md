@@ -20,11 +20,10 @@ Under the `mapping` key we find `entities` and `receiptHandlers` - the next step
 
 ## 🧑🏼‍💻 Your turn! Edit the manifest
 
-Edit the manifest file to accomplish the 3 following things:
+Edit the manifest file to accomplish the following:
 
 1. **Specify a starting block at `54395933`.** In order to save time when indexing the datasource, we must specify a starting block (or else the node would start indexing from the genesis block, which would take a veeeeery long time).
-2. **Change the Account entity to Registry** under the dataSources mappings.
-3. **Remove all the comments**.
+2. **Remove all the comments**.
 
 ## 😅 Solution
 
@@ -49,7 +48,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
-        - Registry
+        - Account
       receiptHandlers:
         - handler: handleReceipt
 ```

@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {Alert, Col, Space, Typography} from 'antd';
+import React, {useState, useEffect} from 'react';
+import {Alert, Col, Space, Typography, List} from 'antd';
 import {PoweroffOutlined} from '@ant-design/icons';
 import {
   ApolloClient,
@@ -7,30 +7,45 @@ import {
   ApolloProvider,
   useLazyQuery,
 } from '@apollo/client';
-import MOST_VALUABLE_PUNKS_QUERY from '@figment-the-graph/graphql/query';
+import DID_QUERY from '@figment-the-graph-near/graphql/query';
 import {useGlobalState} from 'context';
 import {useColors} from 'hooks';
 import {StepButton} from 'components/shared/Button.styles';
-import Punks from '@figment-the-graph/components/punks';
+//import Punks from '@figment-the-graph-near/components/punks';
 
 const {Text} = Typography;
 
-const GRAPHQL_ENDPOINTS = process.env.NEXT_PUBLIC_LOCAL_SUBGRAPH;
+//const endpoint = process.env.SUBGRAPH;
+
+const endpoint =
+  'https://api.thegraph.com/subgraphs/name/aluhning/did-registry';
 
 const client = new ApolloClient({
-  uri: GRAPHQL_ENDPOINTS,
+  uri: endpoint,
   cache: new InMemoryCache(),
 });
 
-const QueryPunks = () => {
+const QueryAccounts = () => {
   const {state, dispatch} = useGlobalState();
+  const [allRegistrations, setAllRegistrations] = useState(['']);
   const {primaryColor, secondaryColor} = useColors(state);
-  const [getAssignedPunk, {loading, error, data}] = useLazyQuery(
-    MOST_VALUABLE_PUNKS_QUERY,
-  );
+  const [getDids, {loading, error, data}] = useLazyQuery(DID_QUERY);
 
   useEffect(() => {
     if (data) {
+      let registrations = [''];
+      let z = 0;
+      while (z < data.data.accounts.length) {
+        let registryData = JSON.parse(data.data.accounts[z].log[0]);
+        console.log('reg registryData', registryData);
+        if (registryData.EVENT_JSON.event == 'putDID') {
+          console.log('reg here');
+          registrations.push(registryData);
+        }
+        z++;
+      }
+      setAllRegistrations(registrations);
+      console.log('registrations', registrations);
       dispatch({
         type: 'SetIsCompleted',
       });
@@ -41,7 +56,7 @@ const QueryPunks = () => {
     <Col key={`${loading}`}>
       <Space direction="vertical" size="large">
         <StepButton
-          onClick={() => getAssignedPunk()}
+          onClick={() => getDids()}
           icon={<PoweroffOutlined />}
           type="primary"
           loading={loading}
@@ -50,10 +65,24 @@ const QueryPunks = () => {
           size="large"
           autoFocus={false}
         >
-          Display the 10 most valuable CryptoPunks
+          Display 10 NEAR accounts and their DIDs.
         </StepButton>
-        {data ? (
-          <Punks data={data.punks} />
+        {allRegistrations ? (
+          <List
+            header={<div>Header</div>}
+            footer={<div>Footer</div>}
+            bordered
+            dataSource={allRegistrations}
+            renderItem={(item) => {
+              console.log('items', item);
+              return (
+                <List.Item>
+                  <Typography.Text mark>[ITEM]</Typography.Text>
+                  {item}
+                </List.Item>
+              );
+            }}
+          />
         ) : error ? (
           <Alert
             message={<Text strong>We couldn&apos;t query the subgraph 😢</Text>}
@@ -73,10 +102,10 @@ const QueryPunks = () => {
 };
 
 const Query = () => {
-  if (!GRAPHQL_ENDPOINTS) {
+  if (!endpoint) {
     return (
       <Alert
-        message="Make sure you have `NEXT_PUBLIC_LOCAL_SUBGRAPH` in your .env.local file."
+        message="Make sure you have `SUBGRAPH` in your .env.local file."
         description="If you make a change to .env.local, you'll need to restart the server!"
         type="error"
         showIcon
@@ -86,7 +115,7 @@ const Query = () => {
 
   return (
     <ApolloProvider client={client}>
-      <QueryPunks />
+      <QueryAccounts />
     </ApolloProvider>
   );
 };

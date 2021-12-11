@@ -9,8 +9,8 @@ import {useGlobalState} from 'context';
 import axios from 'axios';
 import {StepButton} from 'components/shared/Button.styles';
 import {useColors} from 'hooks';
-import {EntityStepStatusesT} from '@figment-the-graph/types';
-import {defaultEntityStatus} from '@figment-the-graph/lib';
+import {EntityStepStatusesT} from '@figment-the-graph-near/types';
+import {defaultEntityStatus} from '@figment-the-graph-near/lib';
 
 const {Text} = Typography;
 

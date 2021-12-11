@@ -8,4 +8,13 @@ const MOST_VALUABLE_PUNKS_QUERY = gql`
   }
 `;
 
-export default MOST_VALUABLE_PUNKS_QUERY;
+const DID_QUERY = gql`
+  query {
+    accounts(first: 10) {
+      id
+      log
+    }
+  }
+`;
+
+export default DID_QUERY;

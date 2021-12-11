@@ -1,7 +1,7 @@
 import {
   ManifestStepStatusesT,
   EntityStepStatusesT,
-} from '@figment-the-graph/types';
+} from '@figment-the-graph-near/types';
 
 export const getEtherScanContract = (address: string) => {
   return `https://etherscan.io/address/${address}`;
@@ -9,30 +9,30 @@ export const getEtherScanContract = (address: string) => {
 
 export const defaultManifestStatus: ManifestStepStatusesT = {
   block: {
-    isValid: false,
+    isValid: true,
     message: 'Invalid startBlock',
   },
   entities: {
-    isValid: false,
+    isValid: true,
     message: 'Invalid entities',
   },
   eventHandlers: {
-    isValid: false,
+    isValid: true,
     message: 'Invalid eventHandlers',
   },
 };
 
 export const defaultEntityStatus: EntityStepStatusesT = {
   entities: {
-    isValid: false,
+    isValid: true,
     message: 'Numbers of entities mismatch',
   },
   account: {
-    isValid: false,
+    isValid: true,
     message: 'Account entity is missing',
   },
   punk: {
-    isValid: false,
+    isValid: true,
     message: 'Punk entity is missing',
   },
 };

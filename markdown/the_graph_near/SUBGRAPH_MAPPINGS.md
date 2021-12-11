@@ -7,11 +7,11 @@ receiptHandlers:
   - handler: handleReceipt
 ```
 
-> We could also define a blockHandler if we are interested in block related metrics.
+> We could also have defined a blockHandler if we are interested in block related data. Currently blockHandler and receiptHandler are the only two handlers available for NEAR.
 
-For each handler that is defined in `subgraph.yaml` under `mapping` we will create an exported function of the same name. Each receipt handler must accept a single parameter called receipt with a type of near.ReceiptWithOutcome.
+For each handler that is defined in `subgraph.yaml` under `mapping` we will create an exported function of the same name. Each receipt handler must accept a single parameter called receipt with a type of `near.ReceiptWithOutcome`.
 
-This receipt handlers is what we call a "mapping" and it goes in `src/mapping.ts`. It will transform the NEAR logging data into entities defined in your schema.
+This receipt handler is what we call a "mapping" and it goes in `src/mapping.ts`. It will transform the NEAR logging data into entities defined in your schema.
 
 ## ✏️ Implement the receipt handler
 
@@ -22,81 +22,163 @@ First, open `src/mapping.ts`.
 Then we need to import some code and prototype the function:
 
 ```typescript
-import {BigInt} from '@graphprotocol/graph-ts';
+import {near, log} from '@graphprotocol/graph-ts';
+import {Account} from '../generated/schema';
 
-import {PunkBought as PunkBoughtEvent} from '../generated/Contract/Contract';
-import {Account, Punk} from '../generated/schema';
-
-export function handlePunkBought(event: PunkBoughtEvent): void {
+export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
   // Implement the function here
 }
 ```
 
-`Account` and `Punk` imported objects are the ones we've just defined, and `PunkBoughtEvent` is referencing the definition of an event we made in the `subgraph.yaml`.
+`Account` is the imported object we've just defined, and `receipt` is referencing the definition of a `receiptWithOutcome` made available in The Graph NEAR implementation. Specifically:
 
 ```typescript
-let account = Account.load(event.params.toAddress.toHexString());
+class ReceiptWithOutcome {
+  outcome: ExecutionOutcome,
+  receipt: ActionReceipt,
+  block: Block
 ```
 
-To create the `Account` entity, we first need to test if the entity already exists:
+and `ExecutionOutcome` is where we get at the logs emmitted.
 
 ```typescript
-if (account == null) {
-  account = new Account(event.params.toAddress.toHexString());
-  account.id = event.params.toAddress.toHexString();
-  account.numberOfPunkBought = BigInt.fromI32(1);
-}
+class ExecutionOutcome {
+      gasBurnt: u64,
+      blockHash: Bytes,
+      id: Bytes,
+      logs: Array<string>,
+      receiptIds: Array<Bytes>,
+      tokensBurnt: BigInt,
+      executorId: string,
+  }
 ```
 
-If it does not, we create a new one by filling all the fields. Otherwise, we only need to increment the `numberOfPunkBought`.
+NEAR has two types of receipts: action receipts or data receipts. Data Receipts are receipts that contain some data for some ActionReceipt with the same receiver_id. Data receipts are not currently handled by The Graph.
+
+ActionReceipts are the result of a transaction execution or another ActionReceipt processing. They'll show up for one of the seven actions that might occur on NEAR: FunctionCall, TransferAction, StakeAction, AddKeyAction, DeleteKeyAction, CreateAccountAction, or DeleteAccountAction.
+
+Probably the most useful are the ActionReceipts from FunctionCall actions. That is where we'll typically add our log output in a contract to emit the log on completion of the FunctionCall. Because of that, those functionCalls are what we want The Graph to listen for.
+
+First, we'll need to grab the actions from the receipt:
 
 ```typescript
-else {
-  account.numberOfPunkBought = account.numberOfPunkBought.plus(
-    BigInt.fromI32(1),
+const actions = receipt.receipt.actions;
+```
+
+Then we'll loop through the actions and call a handleAction function to create the `Account` entity we want to make available. The handleAction looks like this:
+
+```typescript
+for (let i = 0; i < actions.length; i++) {
+  handleAction(
+    actions[i],
+    receipt.receipt,
+    receipt.block.header,
+    receipt.outcome,
   );
 }
 ```
 
-At last and for both cases, we call `save()`.
+As discussed above, we want the logs that come from function calls in the contract. So we'll do this. Notice tht we first check to see if the `Account` entity exists and if it doesn't, create a new one:
+
+```typescript
+function handleAction(
+  action: near.ActionValue,
+  receipt: near.ActionReceipt,
+  blockHeader: near.BlockHeader,
+  outcome: near.ExecutionOutcome
+): void {
+  if (action.kind != near.ActionKind.FUNCTION_CALL) {
+    log.info("Early return: {}", ["Not a function call"]);
+    return;
+  }
+  let account: Account
+  if (account == null) {
+  let account = new Account(receipt.signerId);
+  const functionCall = action.toFunctionCall();
+  ...
+```
+
+Now we'll have the ability to pick out the logs that correspond to the `functionCall` in the contract, so we simply do the following for the name of each function we want to listen for in the contract. For example, this one is listening for the `putDID` function:
+
+```typescript
+// change the methodName here to the methodName emitting the log in the contract
+if (functionCall.methodName == 'putDID') {
+  const receiptId = receipt.id.toHexString();
+  let account = new Account(receipt.signerId);
+  account.accountId = receipt.signerId;
+  account.actionLogs = outcome.logs;
+} else {
+  log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
+}
+```
+
+When the `putDID` function is called, The Graph processes its ActionReceipt and puts the logs in `account.actionLogs`.
+
+At last, we call `save()`.
 
 ```typescript
 account.save();
 ```
 
-The creation of a `Punk` entity follows the same logic, as an helper be inform that we can access timestamp of the event using `event.block.timestamp`.
+## 🧑🏼‍💻 Your turn! Finish implementing the remaining functions of the did.near contract
 
-## 🧑🏼‍💻 Your turn! Finish implement the "handlePunkBought" handler
-
-We implemented half of the event handler. Can you finish it?
+We implemented part of the receipt handler. Can you finish it, by adding the code for the other functions (transferAdmin, changeVerificationStatus, addVerifier, removeVerifier, addEditor, removeEditor, deleteDID, storeAlias, deleteAlias):
 
 ```typescript
-import {BigInt} from '@graphprotocol/graph-ts';
+import {near, log} from '@graphprotocol/graph-ts';
+import {Account} from '../generated/schema';
 
-import {PunkBought as PunkBoughtEvent} from '../generated/Contract/Contract';
-import {Account, Punk} from '../generated/schema';
+export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
+  const actions = receipt.receipt.actions;
 
-export function handlePunkBought(event: PunkBoughtEvent): void {
-  let account = Account.load(event.params.toAddress.toHexString());
-
-  if (account == null) {
-    account = new Account(event.params.toAddress.toHexString());
-    account.id = event.params.toAddress.toHexString();
-    account.numberOfPunkBought = BigInt.fromI32(1);
-  } else {
-    account.numberOfPunkBought = account.numberOfPunkBought.plus(
-      BigInt.fromI32(1),
+  for (let i = 0; i < actions.length; i++) {
+    handleAction(
+      actions[i],
+      receipt.receipt,
+      receipt.block.header,
+      receipt.outcome,
     );
+  }
+}
+
+function handleAction(
+  action: near.ActionValue,
+  receipt: near.ActionReceipt,
+  blockHeader: near.BlockHeader,
+  outcome: near.ExecutionOutcome,
+): void {
+  if (action.kind != near.ActionKind.FUNCTION_CALL) {
+    log.info('Early return: {}', ['Not a function call']);
+    return;
+  }
+
+  let accounts = new Account(receipt.signerId);
+  const functionCall = action.toFunctionCall();
+
+  if (functionCall.methodName == 'putDID') {
+    const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+    log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
+  }
+
+  if (functionCall.methodName == 'init') {
+    const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+    log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
   }
 
   account.save();
 
-  // Your turn! Write underneath those comments
+  // Your turn! Write underneath that code, but before account.save();
   // ---------------------------------------------------------------------
-  // - find (aka load) the Punk using his HexString found in the event
-  // - if there is none, create it and set its "id" and "index" attributes
-  // - set the "owner", "value" and "date" attributes
-  // - save the punk
+  // - implement an if statement to find the appropriate function call
+  // - if it is there, set the receiptId
+  // - set the signerId and log values
+  // - save the account
 }
 ```
 
@@ -106,59 +188,174 @@ Your `src/mapping.ts` should look like this:
 
 ```typescript
 // solution
-import {BigInt} from '@graphprotocol/graph-ts';
+import { near, log } from "@graphprotocol/graph-ts";
+import { Account } from "../generated/schema";
 
-import {PunkBought as PunkBoughtEvent} from '../generated/Contract/Contract';
-import {Account, Punk} from '../generated/schema';
+export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
+  const actions = receipt.receipt.actions;
 
-export function handlePunkBought(event: PunkBoughtEvent): void {
-  let account = Account.load(event.params.toAddress.toHexString());
+  for (let i = 0; i < actions.length; i++) {
+    handleAction(
+      actions[i],
+      receipt.receipt,
+      receipt.block.header,
+      receipt.outcome
+      );
+  }
+}
 
-  if (account == null) {
-    account = new Account(event.params.toAddress.toHexString());
-    account.id = event.params.toAddress.toHexString();
-    account.numberOfPunkBought = BigInt.fromI32(1);
+function handleAction(
+  action: near.ActionValue,
+  receipt: near.ActionReceipt,
+  blockHeader: near.BlockHeader,
+  outcome: near.ExecutionOutcome
+): void {
+
+  if (action.kind != near.ActionKind.FUNCTION_CALL) {
+    log.info("Early return: {}", ["Not a function call"]);
+    return;
+  }
+
+  let accounts = new Account(receipt.signerId);
+  const functionCall = action.toFunctionCall();
+
+  if (functionCall.methodName == "putDID") {
+    const receiptId = receipt.id.toHexString();
+      accounts.signerId = receipt.signerId;
+      accounts.log = outcome.logs;
   } else {
-    account.numberOfPunkBought = account.numberOfPunkBought.plus(
-      BigInt.fromI32(1),
-    );
+    log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
   }
 
-  account.save();
+  if (functionCall.methodName == "init") {
+      const receiptId = receipt.id.toHexString();
+      accounts.signerId = receipt.signerId;
+      accounts.log = outcome.logs;
 
-  let punk = Punk.load(event.params.punkIndex.toHexString());
-
-  if (punk == null) {
-    punk = new Punk(event.params.punkIndex.toHexString());
-    punk.id = event.params.punkIndex.toHexString();
-    punk.index = event.params.punkIndex;
+  } else {
+    log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
   }
 
-  punk.owner = event.params.toAddress.toHexString();
-  punk.value = event.params.value;
-  punk.date = event.block.timestamp;
+  if (functionCall.methodName == "transferAdmin") {
+    const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+    log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+  }
 
-  punk.save();
+if (functionCall.methodName == "changeVerificationStatus") {
+  const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+  }
+
+  if (functionCall.methodName == "addVerifier") {
+    const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+  }
+
+  if (functionCall.methodName == "removeVerifier") {
+    const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+  }
+
+  if (functionCall.methodName == "addEditor") {
+    const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+  }
+
+  if (functionCall.methodName == "removeEditor") {
+    const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+  }
+
+  if (functionCall.methodName == "deleteDID") {
+    const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+  }
+
+  if (functionCall.methodName == "storeAlias") {
+    const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+  }
+
+  if (functionCall.methodName == "deleteAlias") {
+    const receiptId = receipt.id.toHexString();
+    accounts.signerId = receipt.signerId;
+    accounts.log = outcome.logs;
+  } else {
+  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+  }
+
+  accounts.save();
+}
 }
 ```
 
 ## 🚀 Deploy your subgraph
 
-Last but not least, run the following command to deploy your subgraph to your local Graph node:
+Before you can deploy to The Hosted Service you'll need to create a place for it.
 
-```bash
-yarn create-local
-yarn deploy-local
+1. Go to your hosted-service dashboard and click Add Subgraph.
+
+2. Fill out the form. You can select an image for your subgraph, give it a name, link it to an account, subtitle, description, github url and choose whether it is hidden from others or available to all.
+
+> Your subgraph, once deployed needs to have activity on it. If it lies dormant (no queries) for more than 30 days, then you'll need to redeploy it in order for the service to start indexing it again.
+
+Next, we'll need to update our `package.json` script deploy command to include the name of the subgraph you just created on The Hosted Service. Find this line in `package.json`:
+
+```typescript
+"deploy": "graph deploy <GITHUBNAME/SUBGRAPH> --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
 ```
 
-What do those two commands do?
+and replace <GITHUBHAME/SUBGRAPH> with the name of your subgraph. For example:
 
-- `yarn create-local` will create an endpoint for our subgraph (see the environment variable **NEXT_PUBLIC_LOCAL_SUBGRAPH** in your `.env.local`):
-  - On `http://localhost:8000/subgraphs/name/punks` if running `learn-web3-dapp` locally
-  - On Gitpod, the port number goes in front of the URL like this example: `https://8000-apricot-piranha-iub1loby.ws-us18.gitpod.io/`. Your URL will be different, so you need to copy and paste it from your address bar, then add the port number and hyphen in front of the URL (`8000-`) into `.env.local` as the value of **NEXT_PUBLIC_LOCAL_SUBGRAPH**.
-- `yarn deploy-local` will deploy the subgraph to the endpoint specified by **NEXT_PUBLIC_LOCAL_SUBGRAPH**.
+```typescript
+"deploy": "graph deploy ALuhning/DID-Registry --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
+```
 
-As soon as you run `yarn deploy-local`, you will see Docker starting to scan the Ethereum mainnet for CryptoPunks!
+The final step before we can deploy is to authorize with The Graph. For that you need your access token (available from your dashboard). Run the following (replace <ACCESS_TOKEN> with your access token):
+
+```bash
+graph auth --product hosted-service <ACCESS_TOKEN>
+```
+
+And finally, we can now deploy the subgraph to The Hosted Service. Run the following commands to deploy your subgraph to The Hosted Service:
+
+```bash
+yarn codegen
+yarn build
+yarn deploy
+```
+
+What do those three commands do?
+
+- `yarn codegen` generates the code
+- `yarn build` compiles the code
+- `yarn deploy` sends the compiled code to the Hosted Service to make it available for indexing and querying.
+
+Now if you visit your subgraph in your dashboard, you can click on the Logs and see it starting to scan the NEAR mainnet for logs emitted by the functions in the did.near contract.
 
 ![terminal](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph/mapping-01.gif)
 
