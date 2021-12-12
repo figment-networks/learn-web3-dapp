@@ -5,7 +5,6 @@ import {useGlobalState} from 'context';
 import {StepButton} from 'components/shared/Button.styles';
 import {useColors} from 'hooks';
 import {ApolloClient, InMemoryCache, HttpLink, gql} from '@apollo/client';
-import {setContext} from '@apollo/client/link/context';
 
 const {Text} = Typography;
 let client: any;
@@ -30,10 +29,12 @@ const Mapping = () => {
   useEffect(() => {
     console.log('endpoint', endpoint);
 
-    client = new ApolloClient({
-      uri: endpoint,
-      cache: new InMemoryCache(),
-    });
+    if (endpoint) {
+      client = new ApolloClient({
+        uri: endpoint,
+        cache: new InMemoryCache(),
+      });
+    }
 
     if (isValid) {
       dispatch({
@@ -48,6 +49,7 @@ const Mapping = () => {
     setError(null);
     try {
       let thisData = await client.query({query: gql(DID_QUERY)});
+      console.log('thisdata', thisData);
       if (thisData) {
         setIsValid(true);
       } else {

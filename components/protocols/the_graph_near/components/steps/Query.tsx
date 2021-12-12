@@ -44,50 +44,41 @@ const QueryAccounts = () => {
   useEffect(() => {
     console.log('endpoint', endpoint);
 
-    client = new ApolloClient({
-      uri: endpoint,
-      cache: new InMemoryCache(),
-    });
+    if (endpoint) {
+      client = new ApolloClient({
+        uri: endpoint,
+        cache: new InMemoryCache(),
+      });
+    }
 
     async function fetchData() {
+      let registrations: any = [];
       if (data) {
-        let registrations: any = [];
         let z = 0;
         console.log('data', data);
-        while (z < data.data.accounts.length) {
-          let registryData = JSON.parse(data.data.accounts[z].log[0]);
-          console.log('reg registryData', registryData);
-          if (registryData.EVENT_JSON.event == 'putDID') {
-            console.log('reg here');
-            let object;
-            let result: any = await appIdx.get(
-              'daoProfile',
-              registryData.EVENT_JSON.data.did,
-            );
-            if (result) {
-              object = {
-                avatar: result.avatar,
-                registryData: registryData,
-              };
-            }
-
-            let xresult: any = await appIdx.get(
-              'profile',
-              registryData.EVENT_JSON.data.did,
-            );
-            if (xresult) {
-              object = {
-                avatar: xresult.avatar,
-                registryData: registryData,
-              };
-            }
-
-            registrations.push(object);
+        while (z < data.logs.length) {
+          let object;
+          let result: any = await appIdx.get('daoProfile', data.logs[z].did);
+          if (result) {
+            object = {
+              avatar: result.avatar,
+              registryData: data.logs[z],
+            };
           }
+
+          let xresult: any = await appIdx.get('profile', data.logs[z].did);
+          if (xresult) {
+            object = {
+              avatar: xresult.avatar,
+              registryData: data.logs[z],
+            };
+          }
+          registrations.push(object);
           z++;
         }
         setAllRegistrations(registrations);
         console.log('registrations', registrations);
+
         dispatch({
           type: 'SetIsCompleted',
         });
@@ -97,7 +88,7 @@ const QueryAccounts = () => {
     fetchData().then((res) => {
       setLoading(false);
     });
-  }, [data]);
+  }, [endpoint, data]);
 
   async function getData() {
     console.log('client', client);
@@ -136,14 +127,14 @@ const QueryAccounts = () => {
             itemLayout="horizontal"
             bordered
             dataSource={allRegistrations}
-            renderItem={(item) => {
+            renderItem={(item: any) => {
               console.log('items', item);
               return (
                 <List.Item>
                   <List.Item.Meta
                     avatar={<Avatar src={item.avatar} />}
-                    title={item.registryData.EVENT_JSON.data.accountId}
-                    description={item.registryData.EVENT_JSON.data.did}
+                    title={item.accountId}
+                    description={item.did}
                   />
                 </List.Item>
               );
