@@ -8,13 +8,13 @@ In your Hosted Service dashboard, there is a playground area with a GraphiQL UI.
 
 ## 👨‍💻 Your turn! Write the GraphQL query
 
-Using the playground, write a GraphQL query that returns the last 10 account DID registrations ordered by registration time (descending).
+Using the playground, write a GraphQL query that returns the last 5 account DID registrations ordered by registration time (descending).
 
 Some hints to help you:
 
 - Start by just fetching for the "putDID" event function and passing all the fields you want back. Use this as a guide to filter - `where: {event_in: ["putDID"]}`
 - You will want `id`, `accountId`, `did` and `registered`
-- Then use `first`, `orderBy` and `orderDirection` to get 10 registrations.
+- Then use `first`, `orderBy` and `orderDirection` to get 5 registrations.
 
 ## 😅 Solution
 
@@ -23,7 +23,7 @@ Try this query in your playground.
 ```graphql
 // solution
 query {
-   logs(first: 10, orderBy: registered, orderDirection: desc, where: {event_in: ["putDID"]}) {
+   logs(first: 5, orderBy: registered, orderDirection: desc, where: {event_in: ["putDID"]}) {
     id
     did
     accountId
@@ -36,7 +36,7 @@ query {
 
 Now, it's time to enjoy the result of your work! Click on the button on the right, and say hello to the DIDs!
 
-> Note - if you don't see 10 entries it's because the contract is new and there haven't been more than 10 registrations yet. There should be at least one.
+> Note - if you don't see 5 entries it's because the contract is new and there haven't been more than 5 registrations yet. There should be at least one.
 
 ![dids](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/query-01.png)
 

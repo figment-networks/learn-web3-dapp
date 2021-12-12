@@ -9,7 +9,7 @@ query{
 
 export const DID_QUERY = `
     query{
-      logs(where: {event_in: ["putDID"]}) {
+      logs(first: 5, orderBy: registered, orderDirection: desc, where: {event_in: ["putDID"]}) {
         id
         did
         accountId
