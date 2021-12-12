@@ -45,21 +45,24 @@ const QueryAccounts = () => {
       if (data) {
         let z = 0;
         console.log('data', data);
-        while (z < data.logs.length) {
+        while (z < data.data.logs.length) {
           let object;
-          let result: any = await appIdx.get('daoProfile', data.logs[z].did);
+          let result: any = await appIdx.get(
+            'daoProfile',
+            data.data.logs[z].did,
+          );
           if (result) {
             object = {
               avatar: result.avatar,
-              registryData: data.logs[z],
+              registryData: data.data.logs[z],
             };
           }
 
-          let xresult: any = await appIdx.get('profile', data.logs[z].did);
+          let xresult: any = await appIdx.get('profile', data.data.logs[z].did);
           if (xresult) {
             object = {
               avatar: xresult.avatar,
-              registryData: data.logs[z],
+              registryData: data.data.logs[z],
             };
           }
           registrations.push(object);
@@ -122,8 +125,8 @@ const QueryAccounts = () => {
                 <List.Item>
                   <List.Item.Meta
                     avatar={<Avatar src={item.avatar} />}
-                    title={item.accountId}
-                    description={item.did}
+                    title={item.registryData.accountId}
+                    description={item.registryData.did}
                   />
                 </List.Item>
               );
