@@ -10,7 +10,6 @@ const thirdAnswerResponse = 'yes';
 
 const Entity = () => {
   const {state, dispatch} = useGlobalState();
-
   const [isValid, setIsValid] = useState<boolean>(false);
   const [firstAnswer, setFirstAnswer] = useState<number>();
   const [secondAnswer, setSecondAnswer] = useState<string>();

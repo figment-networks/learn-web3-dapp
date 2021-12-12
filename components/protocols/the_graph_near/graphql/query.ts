@@ -1,20 +1,19 @@
-import {gql} from '@apollo/client';
-
-const MOST_VALUABLE_PUNKS_QUERY = gql`
-  query {
-    punks(first: 1) {
-      id
+export const DID_QUERY_MAPPING = `
+query{
+    accounts{
+        id
+        log
     }
-  }
+}
 `;
 
-const DID_QUERY = gql`
-  query {
-    accounts(first: 10) {
-      id
-      log
+export const DID_QUERY = `
+    query{
+      logs(where: {event_in: ["putDID"]}) {
+        id
+        did
+        accountId
+        registered
+      }
     }
-  }
-`;
-
-export default DID_QUERY;
+    `;

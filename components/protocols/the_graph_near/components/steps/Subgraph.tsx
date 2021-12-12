@@ -1,10 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Col, Alert, Space, Typography, Input, InputNumber} from 'antd';
-import {PoweroffOutlined} from '@ant-design/icons';
 import {useGlobalState} from 'context';
 import axios from 'axios';
-import {StepButton} from 'components/shared/Button.styles';
-import {useColors} from 'hooks';
 
 const {Text} = Typography;
 
@@ -20,7 +17,6 @@ const GraphNode = () => {
   const [userEntityAnswer, setUserEntityAnswer] = useState<string>();
   const [userMethodAnswer, setUserMethodAnswer] = useState<string>();
   const [error, setError] = useState<string | null>(null);
-  const {primaryColor, secondaryColor} = useColors(state);
 
   useEffect(() => {
     if (

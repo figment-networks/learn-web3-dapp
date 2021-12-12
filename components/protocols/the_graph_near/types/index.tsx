@@ -64,14 +64,4 @@ export type StepStatusT = {
   message: StatusMessageT;
 };
 
-type PunkdataT = {
-  id: any;
-  index: any;
-  owner?: {id: string};
-  value: any;
-  date: any;
-  svgString?: string;
-  traits?: string;
-};
-
-export type {ErrorT, EntryT, manifestT, PunkdataT};
+export type {ErrorT, EntryT, manifestT};

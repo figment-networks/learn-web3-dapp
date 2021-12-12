@@ -4,27 +4,19 @@ import {PoweroffOutlined} from '@ant-design/icons';
 import {useGlobalState} from 'context';
 import {StepButton} from 'components/shared/Button.styles';
 import {useColors} from 'hooks';
-import {ApolloClient, InMemoryCache, HttpLink, gql} from '@apollo/client';
+import {ApolloClient, InMemoryCache, gql} from '@apollo/client';
+import {DID_QUERY_MAPPING} from '@figment-the-graph-near/graphql/query';
 
 const {Text} = Typography;
 let client: any;
+
 const Mapping = () => {
   const {state, dispatch} = useGlobalState();
   const [isValid, setIsValid] = useState<boolean>(false);
-  const [data, setData] = useState();
   const [endpoint, setEndPoint] = useState();
   const [fetching, setFetching] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const {primaryColor, secondaryColor} = useColors(state);
-
-  const DID_QUERY = `
-  query{
-      accounts{
-          id
-          log
-      }
-  }
-  `;
 
   useEffect(() => {
     console.log('endpoint', endpoint);
@@ -48,7 +40,7 @@ const Mapping = () => {
     setIsValid(false);
     setError(null);
     try {
-      let thisData = await client.query({query: gql(DID_QUERY)});
+      let thisData = await client.query({query: gql(DID_QUERY_MAPPING)});
       console.log('thisdata', thisData);
       if (thisData) {
         setIsValid(true);

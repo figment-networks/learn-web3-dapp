@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Col, Alert, Space, Typography, Input} from 'antd';
 import {useGlobalState} from 'context';
-import {useColors} from 'hooks';
 
 const {Text} = Typography;
 

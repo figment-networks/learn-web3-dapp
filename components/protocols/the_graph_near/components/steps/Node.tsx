@@ -1,11 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Col, Alert, Space, Typography, InputNumber} from 'antd';
-import {PoweroffOutlined} from '@ant-design/icons';
 import {useGlobalState} from 'context';
-import axios from 'axios';
 import Confetti from 'react-confetti';
-import {StepButton} from 'components/shared/Button.styles';
-import {useColors} from 'hooks';
 
 const {Text} = Typography;
 
@@ -15,7 +11,6 @@ const HostedService = () => {
   const [fetching, setFetching] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [userAnswer, setUserAnswer] = useState<number>();
-  const {primaryColor, secondaryColor} = useColors(state);
 
   const answer = 32;
 

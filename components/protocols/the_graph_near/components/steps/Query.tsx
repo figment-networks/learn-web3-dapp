@@ -7,6 +7,7 @@ import {useColors} from 'hooks';
 import {StepButton} from 'components/shared/Button.styles';
 import {CeramicClient} from '@ceramicnetwork/http-client';
 import {IDX} from '@ceramicstudio/idx';
+import {DID_QUERY} from '@figment-the-graph-near/graphql/query';
 
 const {Text} = Typography;
 
@@ -23,23 +24,11 @@ let client: any;
 const QueryAccounts = () => {
   const {state, dispatch} = useGlobalState();
   const [allRegistrations, setAllRegistrations] = useState([]);
-  const [logo, setLogo] = useState();
   const [data, setData] = useState<any>();
   const [endpoint, setEndPoint] = useState();
   const {primaryColor, secondaryColor} = useColors(state);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<boolean>(false);
-
-  const DID_QUERY = `
-    query{
-      logs(where: {event_in: ["putDID"]}) {
-        id
-        did
-        accountId
-        registered
-      }
-    }
-    `;
 
   useEffect(() => {
     console.log('endpoint', endpoint);
