@@ -1,21 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import {Alert, Col, Space, Typography, List, Input, Avatar} from 'antd';
 import {PoweroffOutlined} from '@ant-design/icons';
-import {
-  ApolloClient,
-  InMemoryCache,
-  gql,
-  ApolloProvider,
-  useLazyQuery,
-} from '@apollo/client';
-import DID_QUERY from '@figment-the-graph-near/graphql/query';
+import {ApolloClient, InMemoryCache, gql} from '@apollo/client';
 import {useGlobalState} from 'context';
 import {useColors} from 'hooks';
 import {StepButton} from 'components/shared/Button.styles';
 import {CeramicClient} from '@ceramicnetwork/http-client';
 import {IDX} from '@ceramicstudio/idx';
-
-//import Punks from '@figment-the-graph-near/components/punks';
 
 const {Text} = Typography;
 
@@ -27,36 +18,40 @@ let rootAliases = {
 };
 const appIdx = new IDX({ceramic: ceramicClient, aliases: rootAliases});
 
-//const endpoint = process.env.SUBGRAPH;
+let client: any;
 
 const QueryAccounts = () => {
   const {state, dispatch} = useGlobalState();
   const [allRegistrations, setAllRegistrations] = useState([]);
   const [logo, setLogo] = useState();
-  const [data, setData] = useState();
+  const [data, setData] = useState<any>();
   const [endpoint, setEndPoint] = useState();
   const {primaryColor, secondaryColor} = useColors(state);
   const [loading, setLoading] = useState(true);
-  //const [{loading, error, data}] = useLazyQuery(DID_QUERY);
+  const [error, setError] = useState<boolean>(false);
 
   const DID_QUERY = `
     query{
-        accounts{
-            id
-            log
-        }
+      logs(where: {event_in: ["putDID"]}) {
+        id
+        did
+        accountId
+        registered
+      }
     }
     `;
 
-  const client = new ApolloClient({
-    uri: endpoint,
-    cache: new InMemoryCache(),
-  });
-
   useEffect(() => {
+    console.log('endpoint', endpoint);
+
+    client = new ApolloClient({
+      uri: endpoint,
+      cache: new InMemoryCache(),
+    });
+
     async function fetchData() {
       if (data) {
-        let registrations = [];
+        let registrations: any = [];
         let z = 0;
         console.log('data', data);
         while (z < data.data.accounts.length) {
@@ -65,7 +60,7 @@ const QueryAccounts = () => {
           if (registryData.EVENT_JSON.event == 'putDID') {
             console.log('reg here');
             let object;
-            let result = await appIdx.get(
+            let result: any = await appIdx.get(
               'daoProfile',
               registryData.EVENT_JSON.data.did,
             );
@@ -76,7 +71,7 @@ const QueryAccounts = () => {
               };
             }
 
-            let xresult = await appIdx.get(
+            let xresult: any = await appIdx.get(
               'profile',
               registryData.EVENT_JSON.data.did,
             );
@@ -105,7 +100,9 @@ const QueryAccounts = () => {
   }, [data]);
 
   async function getData() {
+    console.log('client', client);
     let thisData = await client.query({query: gql(DID_QUERY)});
+    console.log('thisdata', thisData);
     setData(thisData);
   }
 
@@ -171,17 +168,6 @@ const QueryAccounts = () => {
 };
 
 const Query = () => {
-  // if (!endpoint) {
-  //   return (
-  //     <Alert
-  //       message="Make sure you have `SUBGRAPH` in your .env.local file."
-  //       description="If you make a change to .env.local, you'll need to restart the server!"
-  //       type="error"
-  //       showIcon
-  //     />
-  //   );
-  // }
-
   return <QueryAccounts />;
 };
 

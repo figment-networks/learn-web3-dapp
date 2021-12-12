@@ -20,7 +20,7 @@ The use case we'll explore in the rest of this tutorial is how to make our app q
 
 For Ethereum contracts, you can go to Etherscan and lookup the contract address to look at its code and figure out what events are being emitted. For example, you can view the popular Crypto Punk ETH-20 contract [here](https://etherscan.io/address/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB) and if you click on the "Contract" tab you can also have a look at [its Solidity code](https://etherscan.io/address/0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB). The contract's address is `0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB`.
 
-Ethereum contracts have an ABIs (Application Binary Interface). It defines the methods and structures that can be used to interact with that binary contract and what shape of data you'll get back.
+Ethereum contracts have ABIs (Application Binary Interface). It defines the methods and structures that can be used to interact with that binary contract and what shape of data you'll get back.
 
 NEAR contracts compile to webAssembly (WASM) and don't have ABIs so it's not as easy to find the data NEAR contracts are emitting. Etherscan support is coming some day, but until then you either know what's being emitted in the logs because you are the developer or you need to go through the code in a Github repo to figure it out.
 

@@ -1,49 +1,78 @@
 import React, {useEffect, useState} from 'react';
-import {Col, Alert, Space, Typography} from 'antd';
+import {Col, Alert, Space, Typography, Input} from 'antd';
 import {PoweroffOutlined} from '@ant-design/icons';
 import {useGlobalState} from 'context';
-import axios from 'axios';
 import {StepButton} from 'components/shared/Button.styles';
 import {useColors} from 'hooks';
+import {ApolloClient, InMemoryCache, HttpLink, gql} from '@apollo/client';
+import {setContext} from '@apollo/client/link/context';
 
 const {Text} = Typography;
-
+let client: any;
 const Mapping = () => {
   const {state, dispatch} = useGlobalState();
-  const [isValid, setIsValid] = useState<boolean>(true);
+  const [isValid, setIsValid] = useState<boolean>(false);
+  const [data, setData] = useState();
+  const [endpoint, setEndPoint] = useState();
   const [fetching, setFetching] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const {primaryColor, secondaryColor} = useColors(state);
 
+  const DID_QUERY = `
+  query{
+      accounts{
+          id
+          log
+      }
+  }
+  `;
+
   useEffect(() => {
+    console.log('endpoint', endpoint);
+
+    client = new ApolloClient({
+      uri: endpoint,
+      cache: new InMemoryCache(),
+    });
+
     if (isValid) {
       dispatch({
         type: 'SetIsCompleted',
       });
     }
-  }, [isValid, setIsValid]);
+  }, [endpoint, isValid, setIsValid]);
 
-  const validStep = async () => {
+  async function getData() {
     setFetching(true);
     setIsValid(false);
     setError(null);
     try {
-      const response = await axios.get(`/api/the-graph/mapping`);
-      setIsValid(response.data);
+      let thisData = await client.query({query: gql(DID_QUERY)});
+      if (thisData) {
+        setIsValid(true);
+      } else {
+        setError('error getting subgraph response');
+      }
     } catch (error) {
       setError(error.message);
     } finally {
       setFetching(false);
     }
-  };
+  }
+
+  function onEntityChange(event: any) {
+    setEndPoint(event.target.value.toLowerCase());
+  }
 
   return (
     <Col key={`${fetching}`}>
       <Space direction="vertical" size="large">
+        <Text>Enter your subgraph endpoint (from your dashboard).</Text>
+        <Input onChange={onEntityChange} />
         <StepButton
           type="primary"
           icon={<PoweroffOutlined />}
-          onClick={validStep}
+          onClick={() => getData()}
           loading={fetching}
           secondary_color={secondaryColor}
           primary_color={primaryColor}
@@ -58,11 +87,11 @@ const Mapping = () => {
               message={<Text strong>We found a deployed subgraph! 🎉</Text>}
               description={
                 <Space direction="vertical">
-                  <div>The time is come to collect the fruits of our work.</div>
+                  <div>Now we can realize the fruits of our labour.</div>
                   <div>
-                    Now let&apos;s query tweak the subgraph to display some
-                    revelant information about cryptopunk. Let&apos;s go do the
-                    next step!
+                    Let&apos;s tweak the subgraph query to display some relevant
+                    information about the accounts registered. On to the next
+                    step next step!
                   </div>
                 </Space>
               }

@@ -22,15 +22,15 @@ First, open `src/mapping.ts`.
 Then we need to import some code and prototype the function:
 
 ```typescript
-import {near, log} from '@graphprotocol/graph-ts';
-import {Account} from '../generated/schema';
+import {near, log, json, JSONValueKind} from '@graphprotocol/graph-ts';
+import {Account, Log} from '../generated/schema';
 
 export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
   // Implement the function here
 }
 ```
 
-`Account` is the imported object we've just defined, and `receipt` is referencing the definition of a `receiptWithOutcome` made available in The Graph NEAR implementation. Specifically:
+`Account` and `Log` are the imported objects (entities) we've just defined, and `receipt` is referencing the definition of a `receiptWithOutcome` made available in The Graph NEAR implementation. Specifically:
 
 ```typescript
 class ReceiptWithOutcome {
@@ -65,7 +65,7 @@ First, we'll need to grab the actions from the receipt:
 const actions = receipt.receipt.actions;
 ```
 
-Then we'll loop through the actions and call a handleAction function to create the `Account` entity we want to make available. The handleAction looks like this:
+Then we'll loop through the actions and call a handleAction function to create the `Account` and `Log` entities we want to make available. The handleAction looks like this:
 
 ```typescript
 for (let i = 0; i < actions.length; i++) {
@@ -101,32 +101,105 @@ function handleAction(
 Now we'll have the ability to pick out the logs that correspond to the `functionCall` in the contract, so we simply do the following for the name of each function we want to listen for in the contract. For example, this one is listening for the `putDID` function:
 
 ```typescript
-// change the methodName here to the methodName emitting the log in the contract
-if (functionCall.methodName == 'putDID') {
-  const receiptId = receipt.id.toHexString();
-  let account = new Account(receipt.signerId);
-  account.accountId = receipt.signerId;
-  account.actionLogs = outcome.logs;
-} else {
-  log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
+if (functionCall.methodName == "putDID") {
+   ...
+```
+
+When the `putDID` function is called, The Graph processes its ActionReceipt and puts the logs in an array of `outcome.logs`.
+
+So, first we want to create a new Log and then check that the function actually emitted a log. If it did, we get the receiptID and set it to logs.id:
+
+```typescript
+let logs = new Log(`${receiptId}`);
+  if(outcome.logs[0]!=null){
+    logs.id = receipt.signerId;
+```
+
+Knowing there is now a log, we want to take the string and parse it to a JSON object. We do that like so:
+
+```typescript
+let parsed = json.fromString(outcome.logs[0])
+  if(parsed.kind == JSONValueKind.OBJECT){
+    let entry = parsed.toObject()
+```
+
+At this point we have a JSON object in entry. Let's take another look at a NEP 171 log:
+
+```typescript
+logging.log(`{"EVENT_JSON":{
+    "standard":"nep171",
+    "version":"1.0.0",
+    "event":"putDID",
+    "data":{
+      "accountId":"${accountId}",
+      "did":"${did}",
+      "registered":${Context.blockTimestamp},
+      "owner":"${Context.predecessor}"
+    }}}`);
+```
+
+In addition to the overall top level object we just parsed, there are two more objects: EVENT_JSON and data. We will need to create objects out of each of those as well. Starting with EVENT_JSON:
+
+```typescript
+//EVENT_JSON
+let eventJSON = entry.entries[0].value.toObject();
+```
+
+Now we will want to loop through each of the object's keys and assign the values to their corresponding entity properties like so:
+
+```typescript
+//standard, version, event (these stay the same for a NEP 171 emmitted log)
+for (let i = 0; i < eventJSON.entries.length; i++) {
+  let key = eventJSON.entries[i].key.toString();
+  switch (true) {
+    case key == 'standard':
+      logs.standard = eventJSON.entries[i].value.toString();
+      break;
+    case key == 'event':
+      logs.event = eventJSON.entries[i].value.toString();
+      break;
+    case key == 'version':
+      logs.version = eventJSON.entries[i].value.toString();
+      break;
+  }
 }
 ```
 
-When the `putDID` function is called, The Graph processes its ActionReceipt and puts the logs in `account.actionLogs`.
+> See how the keys in the switch statement match the keys in the log emitted from the contract? Notice how the keys also correspond to the entity property names and types?
 
-At last, we call `save()`.
+And we do the same thing for the data object:
 
 ```typescript
-account.save();
+//data
+let data = eventJSON.entries[0].value.toObject();
+for (let i = 0; i < data.entries.length; i++) {
+  let key = data.entries[i].key.toString();
+  switch (true) {
+    case key == 'accountId':
+      logs.accountId = data.entries[i].value.toString();
+      break;
+    case key == 'did':
+      logs.did = data.entries[i].value.toString();
+      break;
+    case key == 'registered':
+      logs.registered = data.entries[i].value.toBigInt();
+      break;
+    case key == 'owner':
+      logs.owner = data.entries[i].value.toString();
+      break;
+  }
+}
 ```
 
-## 🧑🏼‍💻 Your turn! Finish implementing the remaining functions of the did.near contract
+At last, we call `logs.save()` and then push the log onto the account entity with `accounts.log.push(logs.id)`.
 
-We implemented part of the receipt handler. Can you finish it, by adding the code for the other functions (transferAdmin, changeVerificationStatus, addVerifier, removeVerifier, addEditor, removeEditor, deleteDID, storeAlias, deleteAlias):
+## 🧑🏼‍💻 Your turn! Implementing the init function of the did.near contract
+
+We implemented part of the receipt handler. Can you finish it, by adding the code for the init function?
 
 ```typescript
-import {near, log} from '@graphprotocol/graph-ts';
-import {Account} from '../generated/schema';
+import {near, log, json, JSONValueKind} from '@graphprotocol/graph-ts';
+import {Account, Log} from '../generated/schema';
 
 export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
   const actions = receipt.receipt.actions;
@@ -153,32 +226,87 @@ function handleAction(
   }
 
   let accounts = new Account(receipt.signerId);
+
   const functionCall = action.toFunctionCall();
 
   if (functionCall.methodName == 'putDID') {
     const receiptId = receipt.id.toHexString();
     accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
+
+    let logs = new Log(`${receiptId}`);
+    if (outcome.logs[0] != null) {
+      logs.id = receipt.signerId;
+
+      let parsed = json.fromString(outcome.logs[0]);
+      if (parsed.kind == JSONValueKind.OBJECT) {
+        let entry = parsed.toObject();
+
+        //EVENT_JSON
+        let eventJSON = entry.entries[0].value.toObject();
+
+        //standard, version, event (these stay the same for a NEP 171 emmitted log)
+        for (let i = 0; i < eventJSON.entries.length; i++) {
+          let key = eventJSON.entries[i].key.toString();
+          switch (true) {
+            case key == 'standard':
+              logs.standard = eventJSON.entries[i].value.toString();
+              break;
+            case key == 'event':
+              logs.event = eventJSON.entries[i].value.toString();
+              break;
+            case key == 'version':
+              logs.version = eventJSON.entries[i].value.toString();
+              break;
+          }
+        }
+
+        //data
+        let data = eventJSON.entries[0].value.toObject();
+        for (let i = 0; i < data.entries.length; i++) {
+          let key = data.entries[i].key.toString();
+          switch (true) {
+            case key == 'accountId':
+              logs.accountId = data.entries[i].value.toString();
+              break;
+            case key == 'did':
+              logs.did = data.entries[i].value.toString();
+              break;
+            case key == 'registered':
+              logs.registered = data.entries[i].value.toBigInt();
+              break;
+            case key == 'owner':
+              logs.owner = data.entries[i].value.toString();
+              break;
+          }
+        }
+      }
+      logs.save();
+    }
+
+    accounts.log.push(logs.id);
   } else {
     log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
   }
-
-  if (functionCall.methodName == 'init') {
-    const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
-  } else {
-    log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
-  }
-
-  account.save();
 
   // Your turn! Write underneath that code, but before account.save();
   // ---------------------------------------------------------------------
   // - implement an if statement to find the appropriate function call
   // - if it is there, set the receiptId
-  // - set the signerId and log values
-  // - save the account
+  // - set the signerId
+  // - create a new Log
+  // - parse the objects and loop through the keys to assign the values to the entity properties (don't forget correct types)
+  // - save the log and push in the the accounts log array
+
+  // Here's the init log for reference:
+  // logging.log(`{"EVENT_JSON":{
+  //  "standard":"nep171",
+  //  "version":"1.0.0",
+  //  "event":"init",
+  //  "data":{
+  //    "adminId":"${adminId}",
+  //    "adminSet":${Context.blockTimestamp},
+  //    "accountId":"${adminId}"
+  //  }}}`)
 }
 ```
 
@@ -188,8 +316,8 @@ Your `src/mapping.ts` should look like this:
 
 ```typescript
 // solution
-import { near, log } from "@graphprotocol/graph-ts";
-import { Account } from "../generated/schema";
+import {near, log, json, JSONValueKind} from '@graphprotocol/graph-ts';
+import {Account, Log} from '../generated/schema';
 
 export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
   const actions = receipt.receipt.actions;
@@ -199,8 +327,8 @@ export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
       actions[i],
       receipt.receipt,
       receipt.block.header,
-      receipt.outcome
-      );
+      receipt.outcome,
+    );
   }
 }
 
@@ -208,108 +336,133 @@ function handleAction(
   action: near.ActionValue,
   receipt: near.ActionReceipt,
   blockHeader: near.BlockHeader,
-  outcome: near.ExecutionOutcome
+  outcome: near.ExecutionOutcome,
 ): void {
-
   if (action.kind != near.ActionKind.FUNCTION_CALL) {
-    log.info("Early return: {}", ["Not a function call"]);
+    log.info('Early return: {}', ['Not a function call']);
     return;
   }
 
   let accounts = new Account(receipt.signerId);
+
   const functionCall = action.toFunctionCall();
 
-  if (functionCall.methodName == "putDID") {
-    const receiptId = receipt.id.toHexString();
-      accounts.signerId = receipt.signerId;
-      accounts.log = outcome.logs;
-  } else {
-    log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
-  }
-
-  if (functionCall.methodName == "init") {
-      const receiptId = receipt.id.toHexString();
-      accounts.signerId = receipt.signerId;
-      accounts.log = outcome.logs;
-
-  } else {
-    log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
-  }
-
-  if (functionCall.methodName == "transferAdmin") {
+  if (functionCall.methodName == 'putDID') {
     const receiptId = receipt.id.toHexString();
     accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
+
+    let logs = new Log(`${receiptId}`);
+    if (outcome.logs[0] != null) {
+      logs.id = receipt.signerId;
+
+      let parsed = json.fromString(outcome.logs[0]);
+      if (parsed.kind == JSONValueKind.OBJECT) {
+        let entry = parsed.toObject();
+
+        //EVENT_JSON
+        let eventJSON = entry.entries[0].value.toObject();
+
+        //standard, version, event (these stay the same for a NEP 171 emmitted log)
+        for (let i = 0; i < eventJSON.entries.length; i++) {
+          let key = eventJSON.entries[i].key.toString();
+          switch (true) {
+            case key == 'standard':
+              logs.standard = eventJSON.entries[i].value.toString();
+              break;
+            case key == 'event':
+              logs.event = eventJSON.entries[i].value.toString();
+              break;
+            case key == 'version':
+              logs.version = eventJSON.entries[i].value.toString();
+              break;
+          }
+        }
+
+        //data
+        let data = eventJSON.entries[0].value.toObject();
+        for (let i = 0; i < data.entries.length; i++) {
+          let key = data.entries[i].key.toString();
+          switch (true) {
+            case key == 'accountId':
+              logs.accountId = data.entries[i].value.toString();
+              break;
+            case key == 'did':
+              logs.did = data.entries[i].value.toString();
+              break;
+            case key == 'registered':
+              logs.registered = data.entries[i].value.toBigInt();
+              break;
+            case key == 'owner':
+              logs.owner = data.entries[i].value.toString();
+              break;
+          }
+        }
+      }
+      logs.save();
+    }
+
+    accounts.log.push(logs.id);
   } else {
-    log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+    log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
   }
 
-if (functionCall.methodName == "changeVerificationStatus") {
-  const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
-  } else {
-  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
-  }
-
-  if (functionCall.methodName == "addVerifier") {
+  if (functionCall.methodName == 'init') {
     const receiptId = receipt.id.toHexString();
     accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
-  } else {
-  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
-  }
 
-  if (functionCall.methodName == "removeVerifier") {
-    const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
-  } else {
-  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
-  }
+    let logs = new Log(`${receiptId}`);
+    if (outcome.logs[0] != null) {
+      logs.id = receipt.signerId;
 
-  if (functionCall.methodName == "addEditor") {
-    const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
-  } else {
-  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
-  }
+      let parsed = json.fromString(outcome.logs[0]);
+      if (parsed.kind == JSONValueKind.OBJECT) {
+        let entry = parsed.toObject();
 
-  if (functionCall.methodName == "removeEditor") {
-    const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
-  } else {
-  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
-  }
+        //EVENT_JSON
+        let eventJSON = entry.entries[0].value.toObject();
 
-  if (functionCall.methodName == "deleteDID") {
-    const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
-  } else {
-  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
-  }
+        //standard, version, event (these stay the same for a NEP 171 emmitted log)
+        for (let i = 0; i < eventJSON.entries.length; i++) {
+          let key = eventJSON.entries[i].key.toString();
+          switch (true) {
+            case key == 'standard':
+              logs.standard = eventJSON.entries[i].value.toString();
+              break;
+            case key == 'event':
+              logs.event = eventJSON.entries[i].value.toString();
+              break;
+            case key == 'version':
+              logs.version = eventJSON.entries[i].value.toString();
+              break;
+          }
+        }
 
-  if (functionCall.methodName == "storeAlias") {
-    const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
-  } else {
-  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
-  }
+        //data
+        let data = eventJSON.entries[0].value.toObject();
+        for (let i = 0; i < data.entries.length; i++) {
+          let key = data.entries[i].key.toString();
+          switch (true) {
+            case key == 'adminId':
+              logs.adminId = data.entries[i].value.toString();
+              break;
+            case key == 'accountId':
+              logs.accountId = data.entries[i].value.toString();
+              break;
+            case key == 'adminSet':
+              logs.adminSet = data.entries[i].value.toBigInt();
+              break;
+          }
+        }
+      }
+      logs.save();
+    }
 
-  if (functionCall.methodName == "deleteAlias") {
-    const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-    accounts.log = outcome.logs;
+    accounts.log.push(logs.id);
   } else {
-  log.info("Not processed - FunctionCall is: {}", [functionCall.methodName]);
+    log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
   }
 
   accounts.save();
-}
 }
 ```
 
@@ -361,4 +514,4 @@ Now if you visit your subgraph in your dashboard, you can click on the Logs and 
 
 ## ✅ Make sure it works
 
-Now it's time for you to verify that you have followed the instructions carefully. Click on the **Check subgraph deployment** button on the right to check that your mappings are correctly implemented.
+Now it's time for you to verify that you have followed the instructions carefully. Click on the **Check subgraph deployment** button on the right to check that your subgraph has been deployed to the hosted service.

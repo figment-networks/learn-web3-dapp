@@ -33,7 +33,7 @@ Replace the existing contents of `subgraph.yaml` with the following code snippet
 // solution
 specVersion: 0.0.4
 description: DID registry
-repository: https://github.com/VitalPointAI/catalyst-subgraph-registry
+repository: https://github.com/VitalPointAI/near-subgraph-template.git
 schema:
   file: ./schema.graphql
 dataSources:
@@ -49,6 +49,7 @@ dataSources:
       file: ./src/mapping.ts
       entities:
         - Account
+        - Log
       receiptHandlers:
         - handler: handleReceipt
 ```
@@ -62,6 +63,6 @@ NEAR datasources currently support two types of handlers:
 
 > receiptHandlers that give you the outcome logs seem to be the most effective way to get specific data off the NEAR chain
 
-## ✅ Make sure it works
+## ✅ Make sure you understand the manifest
 
-Now, it's time for you to verify if you have followed the instructions carefully, click on the button **Test Manifest** to check that your manifest is well formed.
+Now, it's time for you to verify that you understand the various manifest settings. Answer the questions on the right to confirm your knowledge.

@@ -92,7 +92,7 @@ const GraphNode = () => {
         <Text>What is startBlock currently set to?</Text>
         <Text style={{fontWeight: 'bold'}}>Your Answer:</Text>
         <InputNumber min={0} max={99999999} onChange={onStartBlockChange} />
-        <Text>What is the name of the one entity currently defined?</Text>
+        <Text>What is the name of the entity with the fewest properties?</Text>
         <Text style={{fontWeight: 'bold'}}>Your Answer:</Text>
         <Input onChange={onEntityChange} />
         <Text>

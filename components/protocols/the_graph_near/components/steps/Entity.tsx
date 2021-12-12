@@ -1,144 +1,112 @@
 import {useEffect, useState} from 'react';
-import {Col, Alert, Space, Typography} from 'antd';
-import {
-  CheckOutlined,
-  CloseOutlined,
-  PoweroffOutlined,
-} from '@ant-design/icons';
+import {Col, Alert, Space, Typography, Input, InputNumber} from 'antd';
 import {useGlobalState} from 'context';
-import axios from 'axios';
-import {StepButton} from 'components/shared/Button.styles';
-import {useColors} from 'hooks';
-import {EntityStepStatusesT} from '@figment-the-graph-near/types';
-import {defaultEntityStatus} from '@figment-the-graph-near/lib';
 
 const {Text} = Typography;
+
+const firstAnswerResponse = 2;
+const secondAnswerResponse = 'yes';
+const thirdAnswerResponse = 'yes';
 
 const Entity = () => {
   const {state, dispatch} = useGlobalState();
 
-  const [status, setStatus] =
-    useState<EntityStepStatusesT>(defaultEntityStatus);
+  const [isValid, setIsValid] = useState<boolean>(false);
+  const [firstAnswer, setFirstAnswer] = useState<number>();
+  const [secondAnswer, setSecondAnswer] = useState<string>();
+  const [thirdAnswer, setThirdAnswer] = useState<string>();
   const [fetching, setFetching] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const {primaryColor, secondaryColor} = useColors(state);
-
-  const isValid = () =>
-    Object.values(status).reduce((completion, statusField) => {
-      return completion && statusField.isValid;
-    }, true);
-
   useEffect(() => {
-    if (isValid()) {
+    if (
+      firstAnswer == firstAnswerResponse &&
+      secondAnswer == secondAnswerResponse &&
+      thirdAnswer == thirdAnswerResponse
+    ) {
+      setIsValid(true);
+      setError(null);
+    }
+    if (
+      firstAnswer != firstAnswerResponse ||
+      secondAnswer != secondAnswerResponse ||
+      thirdAnswer != thirdAnswerResponse
+    ) {
+      setError('yes');
+      setIsValid(false);
+    }
+    if (
+      firstAnswer == undefined ||
+      secondAnswer == undefined ||
+      thirdAnswer == undefined
+    ) {
+      setIsValid(false);
+      setError(null);
+    }
+    if (isValid) {
       dispatch({
         type: 'SetIsCompleted',
       });
     }
-  }, [status, setStatus]);
+  }, [firstAnswer, secondAnswer, thirdAnswer, isValid, setIsValid]);
 
-  const validStep = async () => {
-    setFetching(true);
-    setError(null);
+  function onFirstAnswerChange(value: number) {
+    setFirstAnswer(value);
+  }
 
-    try {
-      const response = await axios.get(`/api/the-graph/entity`);
-      setStatus(response.data);
-    } catch (error) {
-      setError(error.response.data.message);
-    } finally {
-      setFetching(false);
-    }
-  };
+  function onSecondAnswerChange(event: any) {
+    setSecondAnswer(event.target.value.toLowerCase());
+  }
+
+  function onThirdAnswerChange(event: any) {
+    setThirdAnswer(event.target.value.toLowerCase());
+  }
 
   return (
     <Col key={`${fetching}`}>
       <Space direction="vertical" size="large">
-        <StepButton
-          type="primary"
-          icon={<PoweroffOutlined />}
-          onClick={validStep}
-          loading={fetching}
-          secondary_color={secondaryColor}
-          primary_color={primaryColor}
-          size="large"
-          autoFocus={false}
-        >
-          Check for expected entities
-        </StepButton>
-        {isValid() ? (
+        <Text>How many entities do you have defined?</Text>
+        <Text style={{fontWeight: 'bold'}}>Your Answer:</Text>
+        <InputNumber min={0} max={999} onChange={onFirstAnswerChange} />
+        <Text>Is the Account entity present in your schema.graphql file?</Text>
+        <Text style={{fontWeight: 'bold'}}>Your Answer (yes or no):</Text>
+        <Input onChange={onSecondAnswerChange} />
+        <Text>Is the Log entity present in your schema.graphql file?</Text>
+        <Text style={{fontWeight: 'bold'}}>Your Answer (yes or no):</Text>
+        <Input onChange={onThirdAnswerChange} />
+        {isValid ? (
           <>
             <Alert
-              message={<Text strong>We found the expected entities! 🎉</Text>}
+              message={<Text strong>Excellent. 🎉</Text>}
               description={
                 <Space direction="vertical">
-                  <EntityStatus status={status} />
-                  <div>
-                    Now let&apos;s map our entities to the smart contract
-                    events.
-                  </div>
+                  <div>Looks like your entities are defined.</div>
+                  <div>Now let&apos;s create their mappings.</div>
                 </Space>
               }
               type="success"
               showIcon
             />
           </>
-        ) : (
+        ) : error ? (
           <Alert
             message={
-              <Text strong>We couldn&apos;t find the expected entities 😢</Text>
+              <Text strong>
+                Oops, looks like there is an issue with your entities. 😢
+              </Text>
             }
             description={
-              <EntityStatus
-                status={status}
-                text="Make sure you ran 'yarn codegen'!"
-              />
+              <Space direction="vertical">
+                <div>Please ensure your entities are defined.</div>
+              </Space>
             }
-            type="error"
-            showIcon
-          />
-        )}
-        {error && (
-          <Alert
-            message={<Text strong>An unexpected error occured 😢</Text>}
-            description={<Text code>{error}</Text>}
             type="error"
             showIcon
             closable
           />
-        )}
+        ) : null}
       </Space>
     </Col>
-  );
-};
-
-const EntityStatus = ({
-  status,
-  text,
-}: {
-  status: EntityStepStatusesT;
-  text?: string;
-}) => {
-  return (
-    <Space direction="vertical">
-      {text && <div>{text}</div>}
-      <Space direction="vertical">
-        {Object.values(status).map((status, index) => {
-          return (
-            <Space direction="horizontal" key={index}>
-              <div>
-                {status.isValid ? (
-                  <CheckOutlined size={16} style={{color: 'green'}} />
-                ) : (
-                  <CloseOutlined size={16} style={{color: 'red'}} />
-                )}
-              </div>
-              <div>{status.message}</div>
-            </Space>
-          );
-        })}
-      </Space>
-    </Space>
   );
 };
 
