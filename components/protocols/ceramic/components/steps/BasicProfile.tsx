@@ -10,11 +10,7 @@ import {
   Alert,
 } from 'antd';
 import {useEffect, useState} from 'react';
-import {
-  getCurrentChainId,
-  getCurrentStepIdForCurrentChain,
-  useGlobalState,
-} from 'context';
+import {useGlobalState} from 'context';
 import {useIdx} from '@figment-ceramic/context/idx';
 import {BasicProfile} from '@ceramicstudio/idx-constants';
 import {IdxSchema} from '@figment-ceramic/types';
@@ -31,9 +27,7 @@ const tailLayout = {
 const {Text} = Typography;
 
 const BasicProfileStep = () => {
-  const {state, dispatch} = useGlobalState();
-  const chainId = getCurrentChainId(state);
-  const stepId = getCurrentStepIdForCurrentChain(state);
+  const {dispatch} = useGlobalState();
 
   const [saving, setSaving] = useState<boolean>(false);
   const [name, setName] = useState<string | undefined>(undefined);
@@ -47,10 +41,7 @@ const BasicProfileStep = () => {
   useEffect(() => {
     if (name && basicProfile) {
       dispatch({
-        type: 'SetStepIsCompleted',
-        chainId,
-        stepId,
-        value: true,
+        type: 'SetIsCompleted',
       });
     }
   }, [name, basicProfile]);
@@ -81,7 +72,10 @@ const BasicProfileStep = () => {
       // Read basic profile (use IdxSchema.BasicProfile enum)
       const resp = undefined;
 
-      setCurrentUserData(IdxSchema.BasicProfile, resp as BasicProfile);
+      setCurrentUserData(
+        IdxSchema.BasicProfile,
+        resp as unknown as BasicProfile,
+      );
 
       setBasicProfile(resp);
     } catch (error) {

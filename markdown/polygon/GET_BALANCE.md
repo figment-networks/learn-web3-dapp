@@ -4,11 +4,7 @@ Click on the icon in the upper-right corner of the page to copy the hexadecimal 
 
 ![](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/polygon/click_to_copy.png)
 
-Visit [https://faucet.matic.network/](https://faucet.matic.network/) and paste the address from your selected account in Metamask into the textinput. It is OK to leave the default options for **MATIC** tokens and the Mumbai network selected. Click the Submit button, then click again below to confirm the transaction.
-
-{% hint style="warning" %}
-Sometimes the transaction response on the faucet website returns an `[Object object]` - when this happens, simply refresh the page and try again.
-{% endhint %}
+Visit [https://faucet.polygon.technology/](https://faucet.polygon.technology/) and paste the address from your selected account in Metamask into the textinput. It is OK to leave the default options for **MATIC** tokens and the Mumbai network selected. Click the Submit button, then click again on the popup to confirm the transaction.
 
 Once this transaction is confirmed, you will have 1 **MATIC** on the Mumbai testnet!
 
@@ -17,29 +13,27 @@ Once this transaction is confirmed, you will have 1 **MATIC** on the Mumbai test
 # 🏋️ Challenge
 
 {% hint style="tip" %}
-**Imagine this scenario:** You know you have a big balance. You need to show that balance so you can brag about it to all your awesome Web 3 developer friends! In `components/protocols/polygon/components/steps/Balance.tsx`, implement the`checkBalance` function :
+**Imagine this scenario:** You know you have a big balance. You need to show that balance so you can brag about it to all your awesome Web 3 developer friends! In `components/protocols/polygon/challenges/balance.ts`, implement the `getBalance` function :
 {% endhint %}
 
 **Take a few minutes to figure this out.**
 
 ```typescript
-const checkBalance = async () => {
-  setFetching(true);
-  setBalance(null);
-  setError(undefined);
+const getBalance = async (address: string) => {
   try {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const selectedAddress = window.ethereum.selectedAddress;
-    const selectedAddressBalance = undefined;
-    const balanceToDisplay = undefined;
-    if (!balanceToDisplay) {
+
+    const balance = undefined;
+    if (!balance) {
       throw new Error('Please complete the code');
     }
-    setBalance(balanceToDisplay);
+    return {
+      balance: balance.toString(),
+    };
   } catch (error) {
-    setError(error.message);
-  } finally {
-    setFetching(false);
+    return {
+      error: error.message,
+    };
   }
 };
 ```
@@ -56,42 +50,35 @@ Still not sure how to do this? No problem! The solution is below so you don't ge
 
 ```typescript
 // solution
-const checkBalance = async () => {
-  setFetching(true);
-  setBalance(null);
-  setError(undefined);
+const getBalance = async (address: string) => {
   try {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const selectedAddress = window.ethereum.selectedAddress;
-    const selectedAddressBalance = await provider.getBalance(selectedAddress);
-    const balanceToDisplay = ethers.utils.formatEther(
-      selectedAddressBalance.toString(),
-    );
-    if (!balanceToDisplay) {
+
+    const balance = await provider.getBalance(address);
+    if (!balance) {
       throw new Error('Please complete the code');
     }
-    setBalance(balanceToDisplay);
+    return {
+      balance: balance.toString(),
+    };
   } catch (error) {
-    setError(error.message);
-  } finally {
-    setFetching(false);
+    return {
+      error: error.message,
+    };
   }
 };
 ```
 
 **What happened in the code above?**
 
-- For the duration of this function, `fetching` will be true so that we can conditionally render our UI.
-- We await `provider.getBalance` because it returns a Promise. That Promise returns a BigNumber, which is a specific data type for handling numbers which fall [outside the range of safe values](https://docs.ethers.io/v5/api/utils/bignumber/#BigNumber--notes-safenumbers) in JavaScript. A BigNumber cannot be displayed in the same way as a normal number. We must therefore format the balance to transform it into a string for display, using `ethers.utils.formatEther`.
-- Before we exit the function, set `fetching` to false, which effects the conditional rendering happening in the return function of `Balance.tsx`.
+- We await `provider.getBalance` because it returns a Promise. That Promise returns a BigNumber, which is a specific data type for handling numbers which fall [outside the range of safe values](https://docs.ethers.io/v5/api/utils/bignumber/#BigNumber--notes-safenumbers) in JavaScript.
+- Last but not least, to easy manipulate the returned type we convert it to string using `toString()` method.
 
 ---
 
 # ✅ Make sure it works
 
-When you have completed the code, the **Check Balance** button will function. Click it to view the balance of the connected account:
-
-![](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/polygon/polygon-balance.gif)
+When you have completed the code in `components/protocols/polygon/challenges/balance.ts`, the **Check Balance** button will function. Click it to view the balance of the connected Polygon account.
 
 ---
 

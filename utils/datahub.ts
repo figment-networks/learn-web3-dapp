@@ -7,8 +7,6 @@ import {
   SECRET_NETWORKS,
   POLKADOT_NETWORKS,
   POLKADOT_PROTOCOLS,
-  POLYGON_NETWORKS,
-  POLYGON_PROTOCOLS,
   SOLANA_NETWORKS,
 } from 'types';
 
@@ -71,11 +69,6 @@ export const getDatahubNodeURL = (
         network as POLKADOT_NETWORKS,
         protocol as POLKADOT_PROTOCOLS,
       );
-    case CHAINS.POLYGON:
-      return getDataHubPolygonNodeUrl(
-        network as POLYGON_NETWORKS,
-        protocol as POLYGON_PROTOCOLS,
-      );
     case CHAINS.SOLANA:
       return getDataHubSolanaNodeUrl(network as SOLANA_NETWORKS);
     case CHAINS.CELO:
@@ -91,7 +84,7 @@ const getDataHubAvalancheNodeUrl = (): string =>
   `https://${process.env.AVALANCHE_DATAHUB_URL}/apikey/${process.env.DATAHUB_AVALANCHE_API_KEY}`;
 
 const getDataHubNearNodeUrl = (network: NEAR_NETWORKS): string =>
-  network === NEAR_NETWORKS.MAINNET
+  network === NEAR_NETWORKS.TESTNET
     ? `https://${process.env.DATAHUB_NEAR_MAINNET_RPC_URL}/apikey/${process.env.DATAHUB_NEAR_API_KEY}`
     : `https://${process.env.DATAHUB_NEAR_TESTNET_RPC_URL}/apikey/${process.env.DATAHUB_NEAR_API_KEY}`;
 
@@ -118,31 +111,6 @@ const getDataHubPolkadotNodeUrl = (
       return `https://${process.env.DATAHUB_POLKADOT_MAINNET_RPC_URL}/apikey/${process.env.DATAHUB_POLKADOT_API_KEY}`;
     } else if (protocol === POLKADOT_PROTOCOLS.WS) {
       return `wss://${process.env.DATAHUB_POLKADOT_MAINNET_WS_URL}/apikey/${process.env.DATAHUB_POLKADOT_API_KEY}`;
-    }
-  }
-
-  return '';
-};
-
-const getDataHubPolygonNodeUrl = (
-  network: POLYGON_NETWORKS,
-  protocol: POLYGON_PROTOCOLS,
-): string => {
-  if (network === POLYGON_NETWORKS.MAINNET) {
-    if (protocol === POLYGON_PROTOCOLS.RPC) {
-      return `https://${process.env.DATAHUB_POLYGON_MAINNET_RPC_URL}/apikey/${process.env.DATAHUB_POLYGON_API_KEY}`;
-    } else if (protocol === POLYGON_PROTOCOLS.JSON_RPC) {
-      return `https://${process.env.DATAHUB_POLYGON_MAINNET_JSONRPC_URL}/apikey/${process.env.DATAHUB_POLYGON_API_KEY}`;
-    } else if (protocol === POLYGON_PROTOCOLS.WS) {
-      return `wss://${process.env.DATAHUB_POLYGON_MAINNET_WS_URL}/apikey/${process.env.DATAHUB_POLYGON_API_KEY}`;
-    }
-  } else if (network === POLYGON_NETWORKS.TESTNET) {
-    if (protocol === POLYGON_PROTOCOLS.RPC) {
-      return `https://${process.env.DATAHUB_POLYGON_TESTNET_RPC_URL}/apikey/${process.env.DATAHUB_POLYGON_API_KEY}`;
-    } else if (protocol === POLYGON_PROTOCOLS.JSON_RPC) {
-      return `https://${process.env.DATAHUB_POLYGON_TESTNET_JSONRPC_URL}/apikey/${process.env.DATAHUB_POLYGON_API_KEY}`;
-    } else if (protocol === POLYGON_PROTOCOLS.WS) {
-      return `wss://${process.env.DATAHUB_POLYGON_TESTNET_WS_URL}/apikey/${process.env.DATAHUB_POLYGON_API_KEY}`;
     }
   }
 

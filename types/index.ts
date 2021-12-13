@@ -1,4 +1,5 @@
 import type {Dispatch, SetStateAction} from 'react';
+import {BlockWithTransactions} from '@ethersproject/abstract-provider';
 
 export enum CHAINS {
   ARWEAVE = 'arweave',
@@ -121,9 +122,8 @@ export enum POLKADOT_NETWORKS {
 }
 
 export enum POLYGON_NETWORKS {
-  MAINNET = 'MAINNET',
-  TESTNET = 'TESTNET',
-  DATAHUB = 'datahub',
+  TESTNET = 'Mumbai',
+  DATAHUB = 'Datahub',
 }
 
 export enum SOLANA_NETWORKS {
@@ -330,3 +330,11 @@ export type CheckAccountIdT = {
 };
 
 export type AlertT = 'success' | 'info' | 'warning' | 'error' | undefined;
+
+export type QueryT = {
+  networkName: string;
+  chainId: number;
+  blockHeight: number;
+  gasPriceAsGwei: string;
+  blockInfo: BlockWithTransactions;
+};

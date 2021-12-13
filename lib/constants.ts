@@ -285,7 +285,6 @@ export const CHAINS_CONFIG: ChainsType = {
       {
         id: PROTOCOL_STEPS_ID.DEPLOY_CONTRACT,
         title: 'Deploy a Solidity smart contract',
-        skippable: true,
       },
       {
         id: PROTOCOL_STEPS_ID.SET_CONTRACT_VALUE,

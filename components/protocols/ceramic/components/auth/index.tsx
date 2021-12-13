@@ -7,8 +7,6 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import {useIdx} from '@figment-ceramic/context/idx';
-import {PROTOCOL_INNER_STATES_ID} from 'types';
-import {getCurrentChainId, useGlobalState} from 'context';
 import {slicedAddress} from 'utils/string-utils';
 import {EntryT} from '@figment-ceramic/types';
 import IdentityItem from '@figment-ceramic/components/auth/IdentityItem';
@@ -36,8 +34,6 @@ const Auth = (props: AuthProps): JSX.Element => {
     connectBtnText = 'Connect',
     disconnectBtnText = 'Disconnect',
   } = props;
-  const {state, dispatch} = useGlobalState();
-  const chainId = getCurrentChainId(state);
 
   const {
     connect,
@@ -57,13 +53,6 @@ const Auth = (props: AuthProps): JSX.Element => {
       setLoading(true);
 
       const address = await connect();
-
-      dispatch({
-        type: 'SetStepInnerState',
-        chainId,
-        innerStateId: PROTOCOL_INNER_STATES_ID.ADDRESS,
-        value: address,
-      });
 
       if (onConnected) {
         onConnected(address);
@@ -93,13 +82,6 @@ const Auth = (props: AuthProps): JSX.Element => {
 
       const DID = await logIn();
 
-      dispatch({
-        type: 'SetStepInnerState',
-        chainId,
-        innerStateId: PROTOCOL_INNER_STATES_ID.DID,
-        value: DID,
-      });
-
       if (onLoggedIn) {
         onLoggedIn(DID);
       }
@@ -116,27 +98,6 @@ const Auth = (props: AuthProps): JSX.Element => {
       setLoading(true);
 
       await logOut();
-
-      dispatch({
-        type: 'SetStepInnerState',
-        chainId,
-        innerStateId: PROTOCOL_INNER_STATES_ID.DID,
-        value: null,
-      });
-
-      dispatch({
-        type: 'SetStepInnerState',
-        chainId,
-        innerStateId: PROTOCOL_INNER_STATES_ID.ADDRESS,
-        value: null,
-      });
-
-      dispatch({
-        type: 'SetStepInnerState',
-        chainId,
-        innerStateId: PROTOCOL_INNER_STATES_ID.USER_NAME,
-        value: null,
-      });
 
       if (onLoggedOut) {
         onLoggedOut();

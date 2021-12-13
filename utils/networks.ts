@@ -88,11 +88,10 @@ export const networksMap = (
 
   // POLYGON NETWORKS MAP
   if (chain === CHAINS.POLYGON) {
-    if (network === NETWORK.DATAHUB) {
-      return POLYGON_NETWORKS.DATAHUB;
-    }
     if (network === NETWORK.TESTNET) {
       return POLYGON_NETWORKS.TESTNET;
+    } else {
+      return undefined;
     }
   }
 };

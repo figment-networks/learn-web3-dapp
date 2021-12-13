@@ -10,11 +10,7 @@ import {
   Card,
 } from 'antd';
 import {useEffect, useState} from 'react';
-import {
-  getCurrentChainId,
-  getCurrentStepIdForCurrentChain,
-  useGlobalState,
-} from 'context';
+import {useGlobalState} from 'context';
 import {useIdx} from '@figment-ceramic/context/idx';
 import {IdxSchema, QuoteSchemaT} from '@figment-ceramic/types';
 import {aliases} from '@figment-ceramic/lib';
@@ -31,9 +27,7 @@ const tailLayout = {
 const {Text, Title} = Typography;
 
 const CustomDefinition = () => {
-  const {state, dispatch} = useGlobalState();
-  const chainId = getCurrentChainId(state);
-  const stepId = getCurrentStepIdForCurrentChain(state);
+  const {dispatch} = useGlobalState();
 
   const [saving, setSaving] = useState<boolean>(false);
   const [myQuote, setMyQuote] = useState<QuoteSchemaT | null>(null);
@@ -47,10 +41,7 @@ const CustomDefinition = () => {
   useEffect(() => {
     if (myQuote && customDefinitionData) {
       dispatch({
-        type: 'SetStepIsCompleted',
-        chainId,
-        stepId,
-        value: true,
+        type: 'SetIsCompleted',
       });
     }
   }, [myQuote, customDefinitionData]);
@@ -165,7 +156,7 @@ const CustomDefinition = () => {
                   <div style={{marginTop: '20px'}}>
                     <Space>
                       <Title italic level={4} style={{marginBottom: 0}}>
-                        "{customDefinitionData.text}"
+                        &ldquo;{customDefinitionData.text}&ldquo;
                       </Title>
                       <span> by {customDefinitionData.author}</span>
                     </Space>

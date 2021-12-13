@@ -50,7 +50,7 @@ Still not sure how to do this? No problem! The solution is below so you don't ge
 
 **What happened in the code above?**
 
-- `getTezosUrl` is a helper function used to generate a valid endpoint URL.
+- `getNodeUrl` is a helper function used to generate a valid endpoint URL.
 - The `TezosToolkit` instance manages the connection.
 - Unlike other blockchains, Tezos does not expose a software version for nodes. We will instead retrieve the Chain ID with `getChainId`.
 

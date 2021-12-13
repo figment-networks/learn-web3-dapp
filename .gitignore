@@ -46,6 +46,8 @@ md
 /contracts/solana/program/target/
 /contracts/polygon/SimpleStorage/node_modules
 /contracts/polygon/SimpleStorage/.secret
+/contracts/polygon/SimpleStorage/build
+/contracts/polygon/SimpleStorage/package-lock.json
 /contracts/secret/mysimplecounter
 
 # credentials

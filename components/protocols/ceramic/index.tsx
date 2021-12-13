@@ -7,18 +7,15 @@ import {
   CustomDefinition,
   LogIn,
 } from '@figment-ceramic/components/steps';
-import {
-  getCurrentChainId,
-  getCurrentStepIdForCurrentChain,
-  useGlobalState,
-} from 'context';
+import {useGlobalState} from 'context';
+import {getChainId, getStepId} from 'utils/context';
 import {getNodeURL} from 'utils/datahub';
 import LocalStorageIdentityStore from '@figment-ceramic/lib/identityStore/LocalStorage';
 
 const Ceramic: React.FC = () => {
   const {state} = useGlobalState();
-  const chainId = getCurrentChainId(state);
-  const stepId = getCurrentStepIdForCurrentChain(state);
+  const chainId = getChainId(state);
+  const stepId = getStepId(state);
   const nodeUrl = getNodeURL(
     chainId,
     CERAMIC_NETWORKS.TESTNET,
