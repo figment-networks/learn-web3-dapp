@@ -15,14 +15,13 @@ If you want to read more about The Graph and it's support for NEAR Protocol we'v
 ## 🎥 Video Walkthrough
 
 Here is a comprehensive video walkthrough of the Pathway to help you understand what is going on at every step!
-The beginning of the video is a discussion of Web 3 between Guillaume Galuz, Figment's Head of Education and Nader Dabit, Developer Relations Engineer at Edge & Node. The walkthrough of the Pathway content begins at [10:18](https://www.youtube.com/watch?v=P0sGpnVVVx8?t=621) if you would like to skip ahead and get right into it 😃.
 
-{% embed url="https://www.youtube.com/watch?v=P0sGpnVVVx8" caption="Learn The Graph for NEAR with Figment's 101 Pathway" %}
+{PLACEHOLDER FOR VIDEO WALKTHROUGH}
 
-- Create a subgraph scaffold @ [13:15](https://youtu.be/P0sGpnVVVx8?t=791)
-- Tweaking the manifest @ [22:00](https://youtu.be/P0sGpnVVVx8?t=1320)
-- Define the schema @ [27:47](https://youtu.be/P0sGpnVVVx8?t=1667)
-- Implement the mappings @ [38:22](https://youtu.be/P0sGpnVVVx8?t=2297)
+- Create a subgraph scaffold @
+- Tweaking the manifest @
+- Define the schema @
+- Implement the mappings @
 
 ---
 
