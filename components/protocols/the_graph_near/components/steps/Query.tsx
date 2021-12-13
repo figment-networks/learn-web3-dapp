@@ -44,7 +44,6 @@ const QueryAccounts = () => {
       let registrations: any = [];
       if (data) {
         let z = 0;
-        console.log('data', data);
         while (z < data.data.logs.length) {
           let object;
           let result: any = await appIdx.get(
@@ -69,7 +68,6 @@ const QueryAccounts = () => {
           z++;
         }
         setAllRegistrations(registrations);
-        console.log('registrations', registrations);
 
         dispatch({
           type: 'SetIsCompleted',
@@ -83,9 +81,7 @@ const QueryAccounts = () => {
   }, [endpoint, data]);
 
   async function getData() {
-    console.log('client', client);
     let thisData = await client.query({query: gql(DID_QUERY)});
-    console.log('thisdata', thisData);
     setData(thisData);
   }
 
