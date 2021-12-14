@@ -473,7 +473,7 @@ export const CHAINS_CONFIG: ChainsType = {
   [CHAINS.CERAMIC]: {
     id: CHAINS.CERAMIC,
     label: 'Ceramic',
-    active: false,
+    active: true,
     logoUrl: 'https://developers.ceramic.network/images/ceramic-no-shadow.png',
     protocol: CERAMIC_PROTOCOLS.HTTP,
     network: CERAMIC_NETWORKS.TESTNET,
