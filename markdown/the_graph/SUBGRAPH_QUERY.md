@@ -46,11 +46,3 @@ query {
 Now, it's time to enjoy the result of your work! Click on the button on the right, and say hello to the Punks!
 
 ![punks](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph/query-01.png)
-
-## 🏁 Conclusion
-
-Nice, you made it! What did you think?
-
-If you have any feedback, reach out on [Discord](https://figment.io/devchat)!
-
-If you want to keep learning about The Graph, we have more advanced tutorials on [Figment Learn](https://learn.figment.io/protocols/thegraph).

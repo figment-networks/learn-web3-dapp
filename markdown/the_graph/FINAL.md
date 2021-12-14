@@ -1,11 +1,11 @@
-🥳 **Congratulations**, you have completed the Graph Pathway! \
+🥳 **Congratulations**, you have completed the Graph for NEAR Pathway! \
 Here's a quick recap of what we covered:
 
-- 🔌 Overview of Graph nodes and The Graph Hosted Service
+- 🔌 Running a Graph node with Docker
 - 🏗 Creating a subgraph scaffold to specify what data we're looking for
 - 📜 Tweaking the subgraph manifest to narrow down the search
-- 🪢 Defining schemas to be the objects for logs from NEAR contracts
-- 🗺 Implementing mappings of the JSON log to the entity objects
+- 🪢 Defining schemas to support one-to-many data relationships
+- 🗺 Implementing mappings to handle indexed events
 - 🕵🏻 Querying a subgraph to display the requested and indexed information
 
 # 🧐 Keep learning with these resources:

@@ -11,24 +11,20 @@ type EntryT = {
 };
 
 type sourceT = {
-  address: string;
-  abi: string;
+  account: string;
   startBlock: number;
 };
 
-type eventHandlersT = {
-  event: string;
+type receiptHandlersT = {
   handler: string;
 };
 
 type mappingT = {
-  kind: string;
   apiVersion: string;
   language: string;
-  entities: string[];
-  abis: any;
-  eventHandlers: eventHandlersT[];
   file: string;
+  entities: string[];
+  receiptHandlers: receiptHandlersT[];
 };
 
 type dataSourcesT = {
@@ -48,13 +44,13 @@ type manifestT = {
 export type ManifestStepStatusesT = {
   block: StepStatusT;
   entities: StepStatusT;
-  eventHandlers: StepStatusT;
+  receiptHandlers: StepStatusT;
 };
 
 export type EntityStepStatusesT = {
   entities: StepStatusT;
   account: StepStatusT;
-  punk: StepStatusT;
+  log: StepStatusT;
 };
 
 type StatusMessageT = string;

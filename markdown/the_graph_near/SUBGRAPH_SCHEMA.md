@@ -10,7 +10,7 @@ Entities will be defined in the `schema.graphql` file.
 
 ## 🧑🏼‍💻 Your turn! Define the Account and Log entities
 
-For our implementation, this is super straight forward. We simply need an entity that stores all the values of the JSON object that we get from the contract log string so we can then use them later on in our application. Remember that you or your developer ensured the contract is emitting logs in NEP 171 (JSON) format.
+For our implementation, this is super straightforward: We simply need an entity that stores all the values of the JSON object that we get from the contract log string so we can then use them later on in our application. Remember that you or your developer ensured the contract is emitting logs in NEP 171 (JSON) format.
 
 The Graph support for NEAR provides a handy `json.fromString` function you can use. Unless you're going to pass back the entire JSON string and work with it in the frontend, you'll definitely want to break up the object as it unlocks the power of graphQL queries.
 
@@ -114,4 +114,4 @@ What does `yarn codegen` do? This command creates some boilerplate code under th
 
 ## ✅ Make sure it's going to work
 
-Before going to the next step, review your schema.graphql file and ensure the entities are properly defined. Answer the questions on the right to confirm they are good to go.
+Before going to the next step, click on the **Check for expected entities** button on the right to make sure your entities are properly defined.

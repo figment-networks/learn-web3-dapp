@@ -2,7 +2,7 @@
 
 Like an orchestra, your subgraph is made up of a bunch of pieces that need to play nicely together for the music to sound good. Think of the manifest as the conductor: it sits in the middle and coordinates everything.
 
-If you open your NEAR-Subgraph-Template repository in a code editor like Visual Studio Code, you should see the manifest file called `subgraph.yaml`.
+Look for the folder called `subgraphs` and its child `near-subgraph-template`. It should look like this below. The manifest is the file called `subgraph.yaml`.
 
 ![SG folder](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/manifest-01.png)
 
@@ -23,7 +23,8 @@ Under the `mapping` key we find `entities` and `receiptHandlers` - the next step
 Edit the manifest file to accomplish the following:
 
 1. **Specify a starting block at `54395933`.** In order to save time when indexing the datasource, we must specify a starting block (or else the node would start indexing from the genesis block, which would take a veeeeery long time).
-2. **Remove all the comments**.
+2. **Define only two entities "Account" and "Log"** under the dataSources mappings.
+3. **Only handle receipts with `receiptHandlers`** and name its handler `handleReceipt`
 
 ## 😅 Solution
 
@@ -65,4 +66,4 @@ NEAR datasources currently support two types of handlers:
 
 ## ✅ Make sure you understand the manifest
 
-Now, it's time for you to verify that you understand the various manifest settings. Answer the questions on the right to confirm your knowledge.
+Now, it's time for you to verify if you have followed the instructions carefully, click on the button **Test Manifest** to check that your manifest is well formed.

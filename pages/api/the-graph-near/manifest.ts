@@ -5,11 +5,9 @@ import yaml from 'js-yaml';
 import fs from 'fs';
 import {defaultManifestStatus} from '@figment-the-graph-near/lib';
 
-const START_BLOCK = 13100000;
-const MANIFEST_PATH = './subgraphs/punks/subgraph.yaml';
-const EVENT =
-  'PunkBought(indexed uint256,uint256,indexed address,indexed address)';
-const HANDLER = 'handlePunkBought';
+const START_BLOCK = 54395933;
+const MANIFEST_PATH = './subgraphs/near-subgraph-template/subgraph.yaml';
+const HANDLER = 'handleReceipt';
 
 const loadManifest = () => {
   let manifest = fs.readFileSync(MANIFEST_PATH, 'utf8');
@@ -17,11 +15,11 @@ const loadManifest = () => {
 
   let startBlock = data.dataSources[0].source.startBlock;
   let entities = data.dataSources[0].mapping.entities;
-  let eventHandlers = data.dataSources[0].mapping.eventHandlers;
+  let receiptHandlers = data.dataSources[0].mapping.receiptHandlers;
   return {
     startBlock,
     entities,
-    eventHandlers,
+    receiptHandlers,
   };
 };
 export default async function manifest(
@@ -30,42 +28,41 @@ export default async function manifest(
 ) {
   try {
     let status = defaultManifestStatus;
-    const {startBlock, entities, eventHandlers} = loadManifest();
+    const {startBlock, entities, receiptHandlers} = loadManifest();
 
     if (startBlock === START_BLOCK) {
       status = {
         ...status,
         block: {
           isValid: true,
-          message: 'startBlock is 13100000',
+          message: 'startBlock is 54395933',
         },
       };
     }
 
     if (
-      entities.includes('Punk') &&
       entities.includes('Account') &&
+      entities.includes('Log') &&
       entities.length == 2
     ) {
       status = {
         ...status,
         entities: {
           isValid: true,
-          message: 'Punk and Account entities',
+          message: 'Account and Log entities',
         },
       };
     }
 
     if (
-      eventHandlers.length === 1 &&
-      eventHandlers[0]['event'] === EVENT &&
-      eventHandlers[0]['handler'] === HANDLER
+      receiptHandlers.length === 1 &&
+      receiptHandlers[0]['handler'] === HANDLER
     ) {
       status = {
         ...status,
-        eventHandlers: {
+        receiptHandlers: {
           isValid: true,
-          message: 'PunkBought event with handlePunkBought handler',
+          message: 'Receipt handler with receiptHandler',
         },
       };
     }

@@ -1,123 +1,140 @@
 import React, {useEffect, useState} from 'react';
-import {Col, Alert, Space, Typography, Input} from 'antd';
+import {Col, Alert, Space, Typography} from 'antd';
+import {
+  PoweroffOutlined,
+  CheckOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
+import type {ManifestStepStatusesT} from '@figment-the-graph-near/types';
 import {useGlobalState} from 'context';
+import axios from 'axios';
+import {StepButton} from 'components/shared/Button.styles';
+import {useColors} from 'hooks';
+import {defaultManifestStatus} from '@figment-the-graph-near/lib';
 
 const {Text} = Typography;
 
-const firstAnswerResponse = 'mapping';
-const secondAnswerResponse = 'source';
-const thirdAnswerResponse = 'near-mainnet';
-
 const GraphNode = () => {
   const {state, dispatch} = useGlobalState();
-  const [isValid, setIsValid] = useState<boolean>(false);
-  const [firstAnswer, setFirstAnswer] = useState<string>();
-  const [secondAnswer, setSecondAnswer] = useState<string>();
-  const [thirdAnswer, setThirdAnswer] = useState<string>();
+  const {primaryColor, secondaryColor} = useColors(state);
 
+  const [status, setStatus] = useState<ManifestStepStatusesT>(
+    defaultManifestStatus,
+  );
   const [fetching, setFetching] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const isValid = () =>
+    Object.values(status).reduce((completion, statusField) => {
+      return completion && statusField.isValid;
+    }, true);
+
   useEffect(() => {
-    if (
-      firstAnswer == firstAnswerResponse &&
-      secondAnswer == secondAnswerResponse &&
-      thirdAnswer == thirdAnswerResponse
-    ) {
-      setIsValid(true);
-      setError(null);
-    }
-    if (
-      firstAnswer != firstAnswerResponse ||
-      secondAnswer != secondAnswerResponse ||
-      thirdAnswer != thirdAnswerResponse
-    ) {
-      setError('yes');
-      setIsValid(false);
-    }
-    if (
-      firstAnswer == undefined ||
-      secondAnswer == undefined ||
-      thirdAnswer == undefined
-    ) {
-      setIsValid(false);
-      setError(null);
-    }
-    if (isValid) {
+    if (isValid()) {
       dispatch({
         type: 'SetIsCompleted',
       });
     }
-  }, [firstAnswer, secondAnswer, thirdAnswer, isValid, setIsValid]);
+  }, [status, setStatus]);
 
-  function onFirstAnswerChange(event: any) {
-    setFirstAnswer(event.target.value.toLowerCase());
-  }
+  const checkStep = async () => {
+    setFetching(true);
+    setError(null);
 
-  function onSecondAnswerChange(event: any) {
-    setSecondAnswer(event.target.value.toLowerCase());
-  }
-
-  function onThirdAnswerChange(event: any) {
-    setThirdAnswer(event.target.value.toLowerCase());
-  }
+    try {
+      const response = await axios.get(`/api/the-graph-near/manifest`);
+      setStatus(response.data);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setFetching(false);
+    }
+  };
 
   return (
     <Col key={`${fetching}`}>
       <Space direction="vertical" size="large">
-        <Text>
-          What section of the manifest are entities and receiptHandlers found in
-          (one word)?
-        </Text>
-        <Text style={{fontWeight: 'bold'}}>Your Answer:</Text>
-        <Input onChange={onFirstAnswerChange} />
-        <Text>
-          In which section of the manifest would one set the contract to listen
-          to?
-        </Text>
-        <Text style={{fontWeight: 'bold'}}>Your Answer:</Text>
-        <Input onChange={onSecondAnswerChange} />
-        <Text>
-          What is the only network can we listen to for NEAR contracts?
-        </Text>
-        <Text style={{fontWeight: 'bold'}}>Your Answer:</Text>
-        <Input onChange={onThirdAnswerChange} />
-        {isValid ? (
+        <StepButton
+          type="primary"
+          icon={<PoweroffOutlined />}
+          onClick={checkStep}
+          loading={fetching}
+          secondary_color={secondaryColor}
+          primary_color={primaryColor}
+          size="large"
+          autoFocus={false}
+        >
+          Check the manifest
+        </StepButton>
+        {isValid() ? (
           <>
             <Alert
-              message={<Text strong>Correct. 🎉</Text>}
+              message={<Text strong>The manifest file looks good! 🎉</Text>}
               description={
-                <Space direction="vertical">
-                  <div>Looks like you have mastered the manifest.</div>
-                  <div>
-                    Now let&apos;s tweak the subgraph to make it do something
-                    useful.
-                  </div>
-                </Space>
+                <ManifestStatus
+                  status={status}
+                  text={'Good job! all the pieces are in place.'}
+                />
               }
               type="success"
               showIcon
             />
           </>
-        ) : error ? (
+        ) : (
           <Alert
-            message={
-              <Text strong>
-                Oops, looks like one or more of your answers is wrong. 😢
-              </Text>
-            }
+            message={<Text strong>The manifest file is not ready yet 🥺</Text>}
             description={
-              <Space direction="vertical">
-                <div>Please review the lesson and check your answers.</div>
-              </Space>
+              <ManifestStatus
+                status={status}
+                text="Make sure you've changed all the different pieces!"
+              />
             }
             type="error"
             showIcon
-            closable
           />
-        ) : null}
+        )}
+        {error && (
+          <Alert
+            message={<Text strong>An unexpected error occurs 😢</Text>}
+            description={<Text code>{error}</Text>}
+            type="error"
+            showIcon
+            closable
+            onClose={() => setError(null)}
+          />
+        )}
       </Space>
     </Col>
+  );
+};
+
+const ManifestStatus = ({
+  status,
+  text,
+}: {
+  status: ManifestStepStatusesT;
+  text: string;
+}) => {
+  return (
+    <Space direction="vertical">
+      <div>{text}</div>
+      <Space direction="vertical">
+        {Object.values(status).map((status, index) => {
+          return (
+            <Space direction="horizontal" key={index}>
+              <div>
+                {status.isValid ? (
+                  <CheckOutlined size={16} style={{color: 'green'}} />
+                ) : (
+                  <CloseOutlined size={16} style={{color: 'red'}} />
+                )}
+              </div>
+              <div>{status.message}</div>
+            </Space>
+          );
+        })}
+      </Space>
+    </Space>
   );
 };
 

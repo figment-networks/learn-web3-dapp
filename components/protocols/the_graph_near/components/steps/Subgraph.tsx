@@ -1,79 +1,34 @@
 import React, {useEffect, useState} from 'react';
-import {Col, Alert, Space, Typography, Input, InputNumber} from 'antd';
+import {Col, Alert, Space, Typography} from 'antd';
+import {PoweroffOutlined} from '@ant-design/icons';
 import {useGlobalState} from 'context';
 import axios from 'axios';
+import {StepButton} from 'components/shared/Button.styles';
+import {useColors} from 'hooks';
 
 const {Text} = Typography;
-
-const startBlockAnswer = 54167320;
-const entityAnswer = 'account';
-const methodAnswer = 'putdid';
 
 const GraphNode = () => {
   const {state, dispatch} = useGlobalState();
   const [isValid, setIsValid] = useState<boolean>(false);
   const [fetching, setFetching] = useState<boolean>(false);
-  const [userStartBlockAnswer, setUserStartBlockAnswer] = useState<number>();
-  const [userEntityAnswer, setUserEntityAnswer] = useState<string>();
-  const [userMethodAnswer, setUserMethodAnswer] = useState<string>();
   const [error, setError] = useState<string | null>(null);
+  const {primaryColor, secondaryColor} = useColors(state);
 
   useEffect(() => {
-    if (
-      userStartBlockAnswer == startBlockAnswer &&
-      userEntityAnswer == entityAnswer &&
-      userMethodAnswer == methodAnswer
-    ) {
-      setIsValid(true);
-      setError(null);
-    }
-    if (
-      userStartBlockAnswer != startBlockAnswer ||
-      userEntityAnswer != entityAnswer ||
-      userMethodAnswer != methodAnswer
-    ) {
-      setError('yes');
-      setIsValid(false);
-    }
-    if (
-      userStartBlockAnswer == undefined ||
-      userEntityAnswer == undefined ||
-      userMethodAnswer == undefined
-    ) {
-      setIsValid(false);
-      setError(null);
-    }
     if (isValid) {
       dispatch({
         type: 'SetIsCompleted',
       });
     }
-  }, [
-    userStartBlockAnswer,
-    userEntityAnswer,
-    userMethodAnswer,
-    isValid,
-    setIsValid,
-  ]);
-
-  function onStartBlockChange(value: number) {
-    setUserStartBlockAnswer(value);
-  }
-
-  function onEntityChange(event: any) {
-    setUserEntityAnswer(event.target.value.toLowerCase());
-  }
-
-  function onMethodChange(event: any) {
-    setUserMethodAnswer(event.target.value.toLowerCase());
-  }
+  }, [isValid, setIsValid]);
 
   const validStep = async () => {
     setFetching(true);
     setIsValid(false);
     setError(null);
     try {
-      const response = await axios.get(`/api/the-graph/scaffold`);
+      const response = await axios.get(`/api/the-graph-near/scaffold`);
       setIsValid(response.data);
     } catch (error) {
       setError(error.message);
@@ -85,25 +40,22 @@ const GraphNode = () => {
   return (
     <Col key={fetching as unknown as React.Key}>
       <Space direction="vertical" size="large">
-        <Text>What is startBlock currently set to?</Text>
-        <Text style={{fontWeight: 'bold'}}>Your Answer:</Text>
-        <InputNumber min={0} max={99999999} onChange={onStartBlockChange} />
-        <Text>What is the name of the entity with the fewest properties?</Text>
-        <Text style={{fontWeight: 'bold'}}>Your Answer:</Text>
-        <Input onChange={onEntityChange} />
-        <Text>
-          What is the name of the first functionCall method being listened for?
-        </Text>
-        <Text style={{fontWeight: 'bold'}}>Your Answer:</Text>
-        <Input onChange={onMethodChange} />
+        <StepButton
+          type="ghost"
+          icon={<PoweroffOutlined />}
+          onClick={validStep}
+          loading={fetching}
+          secondary_color={secondaryColor}
+          primary_color={primaryColor}
+          size="large"
+          autoFocus={false}
+        >
+          Check for a subgraph scaffold
+        </StepButton>
         {isValid ? (
           <>
             <Alert
-              message={
-                <Text strong>
-                  Looks like your NEAR subgraph scaffold is ready to go! 🎉
-                </Text>
-              }
+              message={<Text strong>We found a subgraph scaffold! 🎉</Text>}
               description={
                 <Space direction="vertical">
                   <div>
@@ -122,17 +74,10 @@ const GraphNode = () => {
           </>
         ) : error ? (
           <Alert
-            message={
-              <Text strong>
-                Looks like one or more of your answers is wrong. 😢
-              </Text>
-            }
+            message={<Text strong>We couldn&apos;t find a subgraph 😢</Text>}
             description={
               <Space direction="vertical">
-                <div>
-                  Are you sure you cloned the NEAR subgraph project? Try
-                  confirming your answers.
-                </div>
+                <div>Are you sure the subgraph was created?</div>
               </Space>
             }
             type="error"

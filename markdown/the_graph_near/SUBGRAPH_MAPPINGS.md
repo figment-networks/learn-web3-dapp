@@ -198,92 +198,7 @@ At last, we call `logs.save()` and then push the log onto the account entity wit
 We implemented part of the receipt handler. Can you finish it, by adding the code for the init function?
 
 ```typescript
-import {near, log, json, JSONValueKind} from '@graphprotocol/graph-ts';
-import {Account, Log} from '../generated/schema';
-
-export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
-  const actions = receipt.receipt.actions;
-
-  for (let i = 0; i < actions.length; i++) {
-    handleAction(
-      actions[i],
-      receipt.receipt,
-      receipt.block.header,
-      receipt.outcome,
-    );
-  }
-}
-
-function handleAction(
-  action: near.ActionValue,
-  receipt: near.ActionReceipt,
-  blockHeader: near.BlockHeader,
-  outcome: near.ExecutionOutcome,
-): void {
-  if (action.kind != near.ActionKind.FUNCTION_CALL) {
-    log.info('Early return: {}', ['Not a function call']);
-    return;
-  }
-
-  let accounts = new Account(receipt.signerId);
-
-  const functionCall = action.toFunctionCall();
-
-  if (functionCall.methodName == 'putDID') {
-    const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-
-    let logs = new Log(`${receiptId}`);
-    if (outcome.logs[0] != null) {
-      logs.id = receipt.signerId;
-
-      let parsed = json.fromString(outcome.logs[0]);
-      if (parsed.kind == JSONValueKind.OBJECT) {
-        let entry = parsed.toObject();
-
-        //EVENT_JSON
-        let eventJSON = entry.entries[0].value.toObject();
-
-        //standard, version, event (these stay the same for a NEP 171 emmitted log)
-        for (let i = 0; i < eventJSON.entries.length; i++) {
-          let key = eventJSON.entries[i].key.toString();
-          switch (true) {
-            case key == 'standard':
-              logs.standard = eventJSON.entries[i].value.toString();
-              break;
-            case key == 'event':
-              logs.event = eventJSON.entries[i].value.toString();
-              break;
-            case key == 'version':
-              logs.version = eventJSON.entries[i].value.toString();
-              break;
-          }
-        }
-
-        //data
-        let data = eventJSON.entries[0].value.toObject();
-        for (let i = 0; i < data.entries.length; i++) {
-          let key = data.entries[i].key.toString();
-          switch (true) {
-            case key == 'accountId':
-              logs.accountId = data.entries[i].value.toString();
-              break;
-            case key == 'did':
-              logs.did = data.entries[i].value.toString();
-              break;
-            case key == 'registered':
-              logs.registered = data.entries[i].value.toBigInt();
-              break;
-            case key == 'owner':
-              logs.owner = data.entries[i].value.toString();
-              break;
-          }
-        }
-      }
-      logs.save();
-    }
-
-    accounts.log.push(logs.id);
+// ...
   } else {
     log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
   }
@@ -316,187 +231,97 @@ Your `src/mapping.ts` should look like this:
 
 ```typescript
 // solution
-import {near, log, json, JSONValueKind} from '@graphprotocol/graph-ts';
-import {Account, Log} from '../generated/schema';
 
-export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
-  const actions = receipt.receipt.actions;
+// ...
+if (functionCall.methodName == 'init') {
+  const receiptId = receipt.id.toHexString();
+  accounts.signerId = receipt.signerId;
 
-  for (let i = 0; i < actions.length; i++) {
-    handleAction(
-      actions[i],
-      receipt.receipt,
-      receipt.block.header,
-      receipt.outcome,
-    );
-  }
-}
+  let logs = new Log(`${receiptId}`);
+  if (outcome.logs[0] != null) {
+    logs.id = receipt.signerId;
 
-function handleAction(
-  action: near.ActionValue,
-  receipt: near.ActionReceipt,
-  blockHeader: near.BlockHeader,
-  outcome: near.ExecutionOutcome,
-): void {
-  if (action.kind != near.ActionKind.FUNCTION_CALL) {
-    log.info('Early return: {}', ['Not a function call']);
-    return;
-  }
+    let parsed = json.fromString(outcome.logs[0]);
+    if (parsed.kind == JSONValueKind.OBJECT) {
+      let entry = parsed.toObject();
 
-  let accounts = new Account(receipt.signerId);
+      //EVENT_JSON
+      let eventJSON = entry.entries[0].value.toObject();
 
-  const functionCall = action.toFunctionCall();
-
-  if (functionCall.methodName == 'putDID') {
-    const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-
-    let logs = new Log(`${receiptId}`);
-    if (outcome.logs[0] != null) {
-      logs.id = receipt.signerId;
-
-      let parsed = json.fromString(outcome.logs[0]);
-      if (parsed.kind == JSONValueKind.OBJECT) {
-        let entry = parsed.toObject();
-
-        //EVENT_JSON
-        let eventJSON = entry.entries[0].value.toObject();
-
-        //standard, version, event (these stay the same for a NEP 171 emmitted log)
-        for (let i = 0; i < eventJSON.entries.length; i++) {
-          let key = eventJSON.entries[i].key.toString();
-          switch (true) {
-            case key == 'standard':
-              logs.standard = eventJSON.entries[i].value.toString();
-              break;
-            case key == 'event':
-              logs.event = eventJSON.entries[i].value.toString();
-              break;
-            case key == 'version':
-              logs.version = eventJSON.entries[i].value.toString();
-              break;
-          }
-        }
-
-        //data
-        let data = eventJSON.entries[0].value.toObject();
-        for (let i = 0; i < data.entries.length; i++) {
-          let key = data.entries[i].key.toString();
-          switch (true) {
-            case key == 'accountId':
-              logs.accountId = data.entries[i].value.toString();
-              break;
-            case key == 'did':
-              logs.did = data.entries[i].value.toString();
-              break;
-            case key == 'registered':
-              logs.registered = data.entries[i].value.toBigInt();
-              break;
-            case key == 'owner':
-              logs.owner = data.entries[i].value.toString();
-              break;
-          }
+      //standard, version, event (these stay the same for a NEP 171 emmitted log)
+      for (let i = 0; i < eventJSON.entries.length; i++) {
+        let key = eventJSON.entries[i].key.toString();
+        switch (true) {
+          case key == 'standard':
+            logs.standard = eventJSON.entries[i].value.toString();
+            break;
+          case key == 'event':
+            logs.event = eventJSON.entries[i].value.toString();
+            break;
+          case key == 'version':
+            logs.version = eventJSON.entries[i].value.toString();
+            break;
         }
       }
-      logs.save();
-    }
 
-    accounts.log.push(logs.id);
-  } else {
-    log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
-  }
-
-  if (functionCall.methodName == 'init') {
-    const receiptId = receipt.id.toHexString();
-    accounts.signerId = receipt.signerId;
-
-    let logs = new Log(`${receiptId}`);
-    if (outcome.logs[0] != null) {
-      logs.id = receipt.signerId;
-
-      let parsed = json.fromString(outcome.logs[0]);
-      if (parsed.kind == JSONValueKind.OBJECT) {
-        let entry = parsed.toObject();
-
-        //EVENT_JSON
-        let eventJSON = entry.entries[0].value.toObject();
-
-        //standard, version, event (these stay the same for a NEP 171 emmitted log)
-        for (let i = 0; i < eventJSON.entries.length; i++) {
-          let key = eventJSON.entries[i].key.toString();
-          switch (true) {
-            case key == 'standard':
-              logs.standard = eventJSON.entries[i].value.toString();
-              break;
-            case key == 'event':
-              logs.event = eventJSON.entries[i].value.toString();
-              break;
-            case key == 'version':
-              logs.version = eventJSON.entries[i].value.toString();
-              break;
-          }
-        }
-
-        //data
-        let data = eventJSON.entries[0].value.toObject();
-        for (let i = 0; i < data.entries.length; i++) {
-          let key = data.entries[i].key.toString();
-          switch (true) {
-            case key == 'adminId':
-              logs.adminId = data.entries[i].value.toString();
-              break;
-            case key == 'accountId':
-              logs.accountId = data.entries[i].value.toString();
-              break;
-            case key == 'adminSet':
-              logs.adminSet = data.entries[i].value.toBigInt();
-              break;
-          }
+      //data
+      let data = eventJSON.entries[0].value.toObject();
+      for (let i = 0; i < data.entries.length; i++) {
+        let key = data.entries[i].key.toString();
+        switch (true) {
+          case key == 'adminId':
+            logs.adminId = data.entries[i].value.toString();
+            break;
+          case key == 'accountId':
+            logs.accountId = data.entries[i].value.toString();
+            break;
+          case key == 'adminSet':
+            logs.adminSet = data.entries[i].value.toBigInt();
+            break;
         }
       }
-      logs.save();
     }
-
-    accounts.log.push(logs.id);
-  } else {
-    log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
+    logs.save();
   }
 
-  accounts.save();
+  accounts.log.push(logs.id);
+} else {
+  log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
 }
+// ...
 ```
 
 ## 🚀 Deploy your subgraph
 
 Before you can deploy to The Hosted Service you'll need to create a place for it.
 
-1. Go to your hosted-service dashboard and click Add Subgraph.
+1. Go to your Hosted Service dashboard and click Add Subgraph.
 
-2. Fill out the form. You can select an image for your subgraph, give it a name, link it to an account, subtitle, description, github url and choose whether it is hidden from others or available to all.
+2. Fill out the form. You can select an image for your subgraph, give it a name, subtitle, description, github url and link it to an account. You can also choose whether it is hidden from others or available to all.
 
-> Your subgraph, once deployed needs to have activity on it. If it lies dormant (no queries) for more than 30 days, then you'll need to redeploy it in order for the service to start indexing it again.
+> Once your subgraph is deployed, it needs to have activity on it to remain active. If there are no queries for more than 30 days, you'll need to redeploy it in order for the Hosted Service to start indexing it again.
 
-Next, we'll need to update our `package.json` script deploy command to include the name of the subgraph you just created on The Hosted Service. Find this line in `package.json`:
+Next, we'll need to update `package.json`'s deploy command to include the name of the subgraph you just created on the Hosted Service. Find this line in `package.json`:
 
-```typescript
+```json
 "deploy": "graph deploy <GITHUBNAME/SUBGRAPH> --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
 ```
 
-and replace <GITHUBHAME/SUBGRAPH> with the name of your subgraph. For example:
+Replace <GITHUBHAME/SUBGRAPH> with the name of your subgraph. For example:
 
-```typescript
+```json
 "deploy": "graph deploy ALuhning/DID-Registry --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
 ```
 
-The final step before we can deploy is to authorize with The Graph. For that you need your access token (available from your dashboard). Run the following (replace <ACCESS_TOKEN> with your access token):
+The final step before deploying to the Hosted Service is to authorize with The Graph CLI. For that, you need your access token (available from [your dashboard](https://thegraph.com/hosted-service/dashboard)). Run the following command, remember to replace <ACCESS_TOKEN> with your actual access token:
 
 ```bash
 graph auth --product hosted-service <ACCESS_TOKEN>
 ```
 
-And finally, we can now deploy the subgraph to The Hosted Service. Run the following commands to deploy your subgraph to The Hosted Service:
+We can now deploy our subgraph to the Hosted Service with the following commands:
 
-```bash
+```text
 yarn codegen
 yarn build
 yarn deploy
@@ -504,8 +329,8 @@ yarn deploy
 
 What do those three commands do?
 
-- `yarn codegen` generates the code
-- `yarn build` compiles the code
+- `yarn codegen` generates the types for the GraphQL schema.
+- `yarn build` compiles the subgraph and organizes the files in the `build` directory.
 - `yarn deploy` sends the compiled code to the Hosted Service to make it available for indexing and querying.
 
 Now if you visit your subgraph in your dashboard, you can click on the Logs and see it starting to scan the NEAR mainnet for logs emitted by the functions in the did.near contract.
@@ -514,4 +339,4 @@ Now if you visit your subgraph in your dashboard, you can click on the Logs and 
 
 ## ✅ Make sure it works
 
-Now it's time for you to verify that you have followed the instructions carefully. Click on the **Check subgraph deployment** button on the right to check that your subgraph has been deployed to the hosted service.
+Now it's time for you to verify that you have followed the instructions carefully. Click on the **Check subgraph deployment** button on the right to check that your subgraph has been deployed to the Hosted Service.

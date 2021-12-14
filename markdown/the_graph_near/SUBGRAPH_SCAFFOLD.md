@@ -8,7 +8,7 @@ In this Pathway we will go over each of them one by one, understand what they do
 
 ## 🤝 Picking a contract account
 
-On Ethereum, a subgraph indexes events emitted by a smart contract, but on NEAR, we don't have events (at least not yet). The Graph for NEAR indexes blocks and receipts. The receipts may contain logs if a developer codes them in (ideally in a standard JSON format). So the first thing we need to do is pick the NEAR contract account our subgraph will be listening to.
+On NEAR we don't have events (at least not yet) like we do on Ethereum. The Graph for NEAR indexes blocks and receipts. The receipts may contain logs if a developer codes them in (ideally in a standard JSON format). So the first thing we need to do is pick the NEAR contract account our subgraph will be listening to.
 
 > Note: at this time we can only connect to contract accounts on `near-mainnet`. Testnet support is in the works.
 
@@ -47,7 +47,7 @@ In a code editor, a subgraph will be a folder with a few different folders and f
 We will need The Graph Cli installed to generate, build, and deploy the subgraphs to the Hosted Service. Install the CLI by running:
 
 ```text
-yarn global add @graphprotocol/graph-cli
+npm install -g add @graphprotocol/graph-cli
 ```
 
 Verify the installation was successful by running `graph` in your Terminal. You should see:
@@ -57,26 +57,30 @@ Welcome to graph CLI version 0.23.2!
 Type graph --help to view common commands.
 ```
 
-## 🧑🏼‍💻 Your turn! Generate a NEAR subgraph scaffold
+Let's then cd into the `subgraphs` folder:
+
+```text
+cd subgraphs
+```
+
+## 🧑🏼‍💻 Your turn! Clone a NEAR subgraph scaffold
 
 We've made it easier to scaffold out a NEAR subgraph project by creating a [NEAR-Subgraph-Template](https://github.com/VitalPointAI/near-subgraph-template) you can clone from Github.
 
 ```text
-git clone https://github.com/VitalPointAI/near-subgraph-template.git your-project-directory
+git clone https://github.com/VitalPointAI/near-subgraph-template.git
 ```
 
-Once cloned into your directory, cd into it and open it up in your editor.
-
-Let's install the dependencies using following in your terminal:
-
-> Note: You need to be using node >= 14.17
+Once the template has been cloned, change into the near-subgraph-template directory and install the dependencies with npm. Assuming you're using Gitpod, you can use the terminal command code <filename> to open a file, or navigate to the file in the Explorer panel and click on the filename.
+You will need to look in subgraph.yaml, schema.graphql and src/mapping.ts
 
 ```text
-yarn
+cd near-subgraph-template
+npm install
 ```
 
 ## ✅ Make sure it works
 
 Now it's time for you to verify that you have followed the instructions carefully.
 
-Answer the questions on the right to confirm your scaffold exists.
+Click on the **Check for a subgraph scaffold** button on the right to see if your scaffold exists, and is in the right place.

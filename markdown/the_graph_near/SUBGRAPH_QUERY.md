@@ -32,9 +32,9 @@ query {
 }
 ```
 
-## 🥳 Enjoy the result of your work
+## 🥳 Now see the results of the query
 
-Now, it's time to enjoy the result of your work! Click on the button on the right, and say hello to the DIDs!
+Now, it's time to see the query in action! Click on the button on the right, and say hello to the DIDs!
 
 > Note - if you don't see 5 entries it's because the contract is new and there haven't been more than 5 registrations yet. There should be at least one.
 

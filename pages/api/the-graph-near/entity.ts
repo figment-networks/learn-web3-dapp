@@ -3,7 +3,7 @@ import fs from 'fs';
 import {defaultEntityStatus} from '@figment-the-graph-near/lib';
 import {EntityStepStatusesT} from '@figment-the-graph-near/types';
 
-const GENERATED_PATH = './subgraphs/punks/generated/schema.ts';
+const GENERATED_PATH = './subgraphs/near-subgraph-template/generated/schema.ts';
 
 export default async function entity(
   _req: NextApiRequest,
@@ -43,12 +43,12 @@ export default async function entity(
       };
     }
 
-    if (entities.includes('Punk')) {
+    if (entities.includes('Log')) {
       status = {
         ...status,
-        punk: {
+        log: {
           isValid: true,
-          message: 'Punk entity defined',
+          message: 'Log entity defined',
         },
       };
     }
