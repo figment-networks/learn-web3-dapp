@@ -65,17 +65,17 @@ cd subgraphs
 
 ## 🧑🏼‍💻 Your turn! Clone a NEAR subgraph scaffold
 
-We've made it easier to scaffold out a NEAR subgraph project by creating a [NEAR-Subgraph-Template](https://github.com/VitalPointAI/near-subgraph-template) you can clone from Github.
+We've made it easier to scaffold out a NEAR subgraph project by creating a branch of our [NEAR-Subgraph Template](https://github.com/VitalPointAI/near-subgraph) for you can clone from Github.
 
 ```text
-git clone https://github.com/VitalPointAI/near-subgraph-template.git
+git clone --branch near-graph https://github.com/VitalPointAI/near-subgraph.git
 ```
 
-Once the template has been cloned, change into the near-subgraph-template directory and install the dependencies with npm. Assuming you're using Gitpod, you can use the terminal command code <filename> to open a file, or navigate to the file in the Explorer panel and click on the filename.
+Once the template has been cloned, change into the near-subgraph directory and install the dependencies with npm. Assuming you're using Gitpod, you can use the terminal command code <filename> to open a file, or navigate to the file in the Explorer panel and click on the filename.
 You will need to look in subgraph.yaml, schema.graphql and src/mapping.ts
 
 ```text
-cd near-subgraph-template
+cd near-subgraph
 npm install
 ```
 

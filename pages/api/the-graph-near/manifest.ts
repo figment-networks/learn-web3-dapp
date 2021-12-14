@@ -6,7 +6,7 @@ import fs from 'fs';
 import {defaultManifestStatus} from '@figment-the-graph-near/lib';
 
 const START_BLOCK = 54395933;
-const MANIFEST_PATH = './subgraphs/near-subgraph-template/subgraph.yaml';
+const MANIFEST_PATH = './subgraphs/near-subgraph/subgraph.yaml';
 const HANDLER = 'handleReceipt';
 
 const loadManifest = () => {

@@ -30,7 +30,7 @@ export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
 }
 ```
 
-`Account` and `Log` are the imported objects (entities) we've just defined, and `receipt` is referencing the definition of a `receiptWithOutcome` made available in The Graph NEAR implementation. Specifically:
+`Account` and `Log` are the imported objects (entities) we've just defined, and `receipt` is referencing the `receiptWithOutcome` class coming from `near-subgraph/node_modules/@graphprotocol/graph-ts/chain/near.ts`. For your information, the `ReceiptWithOutcome` and `ExecutionOutcome` classes are as follows.
 
 ```typescript
 class ReceiptWithOutcome {

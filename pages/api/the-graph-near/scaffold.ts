@@ -6,7 +6,7 @@ export default async function scaffold(
   res: NextApiResponse<boolean | string>,
 ) {
   try {
-    fs.readFileSync('./subgraphs/near-subgraph-template/subgraph.yaml', 'utf8');
+    fs.readFileSync('./subgraphs/near-subgraph/subgraph.yaml', 'utf8');
     res.status(200).json(true);
   } catch (error) {
     let errorMessage = error instanceof Error ? error.message : 'Unknown Error';

@@ -2,7 +2,7 @@
 
 Like an orchestra, your subgraph is made up of a bunch of pieces that need to play nicely together for the music to sound good. Think of the manifest as the conductor: it sits in the middle and coordinates everything.
 
-Look for the folder called `subgraphs` and its child `near-subgraph-template`. It should look like this below. The manifest is the file called `subgraph.yaml`.
+Look for the folder called `subgraphs` and its child `near-subgraph`. It should look like this below. The manifest is the file called `subgraph.yaml`.
 
 ![SG folder](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/manifest-01.png)
 
@@ -34,7 +34,7 @@ Replace the existing contents of `subgraph.yaml` with the following code snippet
 // solution
 specVersion: 0.0.4
 description: DID registry
-repository: https://github.com/VitalPointAI/near-subgraph-template.git
+repository: https://github.com/VitalPointAI/near-subgraph.git
 schema:
   file: ./schema.graphql
 dataSources:
