@@ -82,6 +82,7 @@ const QueryAccounts = () => {
 
   async function getData() {
     let thisData = await client.query({query: gql(DID_QUERY)});
+    console.log('data', thisData);
     setData(thisData);
   }
 

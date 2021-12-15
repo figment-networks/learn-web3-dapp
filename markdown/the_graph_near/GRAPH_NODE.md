@@ -14,9 +14,9 @@ A Graph node comes with the following components:
 
 Normally, for development, we'd want to run a local Graph node to listen for NEAR receipts and blocks while also listening to clients' requests to respond with data. However, setting up a local Graph node for NEAR is currently complex and there is very little/no documentation available, so we're going to rely on The Graph's hosted service. Unfortunately, that means The Graph is acting like a single indexer/single point of failure and you lose the decentralization that comes with The Graph network for now.
 
-## 👨‍💻 Setting up the Graph hosted service
+## 👨‍💻 Using the Hosted Service
 
-Getting started with [the hosted service](https://thegraph.com/hosted-service/) is simply a matter of signing up using your Github login credentials. Once inside, navigate to your dashboard. This is where all the subgraphs you deploy will reside. Inside you will see an access token that is used to authorize you during deployment and the button to **Add a Subgraph**.
+Getting started with [the Hosted Service](https://thegraph.com/hosted-service/) is simply a matter of signing up using your Github login credentials. Once inside, navigate to your dashboard. This is where all the subgraphs you deploy will reside. Inside you will see an access token that is used to authorize you during deployment and the button to **Add a Subgraph**.
 
 ![hosted](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/hosted-01.png)
 

@@ -3,8 +3,8 @@ import {
   EntityStepStatusesT,
 } from '@figment-the-graph-near/types';
 
-export const getEtherScanContract = (address: string) => {
-  return `https://etherscan.io/address/${address}`;
+export const getNEARContract = (address: string) => {
+  return `https://explorer.near.org/accounts/${address}`;
 };
 
 export const defaultManifestStatus: ManifestStepStatusesT = {
@@ -35,16 +35,4 @@ export const defaultEntityStatus: EntityStepStatusesT = {
     isValid: false,
     message: 'Log entity is missing',
   },
-};
-
-type WEI = string;
-type ETH = string;
-
-export const toEther = (amountInWei: WEI): ETH => {
-  // 1 ETH = 10**18 wei
-  const DECIMAL_OFFSET = 10 ** 18;
-  const centiEther = parseFloat(
-    ((parseFloat(amountInWei) / DECIMAL_OFFSET) * 100).toFixed(),
-  );
-  return (centiEther / 100).toFixed(2);
 };

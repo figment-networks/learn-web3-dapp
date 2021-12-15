@@ -1,4 +1,4 @@
-🥳 **Congratulations**, you have completed the Graph for NEAR Pathway! \
+🥳 **Congratulations**, you have completed the Graph Pathway! \
 Here's a quick recap of what we covered:
 
 - 🔌 Running a Graph node with Docker

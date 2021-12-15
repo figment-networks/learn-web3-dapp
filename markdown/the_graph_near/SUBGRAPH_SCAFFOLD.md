@@ -42,7 +42,7 @@ logging.log(`{"EVENT_JSON":{
 
 ## 💻 Install the Graph CLI
 
-In a code editor, a subgraph will be a folder with a few different folders and files. Usually we'd use the CLI to initiate a Graph project that sets up those files/folders for us, but the abiltiy to run `graph init` is currently not available for NEAR. So we'll need to scaffold out our project differently.
+In a code editor, a subgraph will be a folder with a few different folders and files. Usually we'd use the CLI to initiate a Graph project that sets up those files/folders for us, but the ability to run `graph init` is currently not available for NEAR. So we'll need to scaffold out our project differently.
 
 We will need The Graph Cli installed to generate, build, and deploy the subgraphs to the Hosted Service. Install the CLI by running:
 
@@ -71,8 +71,8 @@ We've made it easier to scaffold out a NEAR subgraph project by creating a branc
 git clone --branch near-graph https://github.com/VitalPointAI/near-subgraph.git
 ```
 
-Once the template has been cloned, change into the near-subgraph directory and install the dependencies with npm. Assuming you're using Gitpod, you can use the terminal command code <filename> to open a file, or navigate to the file in the Explorer panel and click on the filename.
-You will need to look in subgraph.yaml, schema.graphql and src/mapping.ts
+Once the template has been cloned, change into the near-subgraph directory and install the dependencies with npm. Assuming you're using Gitpod, you can use the terminal command `code <filename>` to open a file, or navigate to the file in the Explorer panel and click on the filename.
+You will need to look in `subgraph.yaml`, `schema.graphql` and `src/mapping.ts`.
 
 ```text
 cd near-subgraph

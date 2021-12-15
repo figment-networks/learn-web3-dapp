@@ -1,4 +1,4 @@
-🥳 **Congratulations**, you have completed the Graph Pathway! \
+🥳 **Congratulations**, you have completed the Graph for NEAR Pathway! \
 Here's a quick recap of what we covered:
 
 - 🔌 Overview of Graph nodes and The Graph Hosted Service
