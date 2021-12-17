@@ -6,7 +6,7 @@ This is analogous to the process of defining the Models in an MVC framework.
 
 Entities will be defined in the `schema.graphql` file.
 
-![Entities](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/entity-01.png)
+![Entities](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/entity-01.png?raw=true)
 
 ## 🧑🏼‍💻 Your turn! Define the Account and Log entities
 
@@ -110,7 +110,7 @@ yarn codegen
 
 What does `yarn codegen` do? This command creates some boilerplate code under the `generated` folder. This boilerplate code defines **typescript** classes for each `entities` (have a look at `generated/schema.ts`). We will use this code in the next step to define the mappings between our entities and the NEAR contract events.
 
-![terminal](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/entity-02.gif)
+![terminal](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/entity-02.gif?raw=true)
 
 ## ✅ Make sure it's going to work
 

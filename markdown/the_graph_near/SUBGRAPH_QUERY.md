@@ -38,7 +38,7 @@ Now, it's time to see the query in action! Click on the button on the right, and
 
 > Note - if you don't see 5 entries it's because the contract is new and there haven't been more than 5 registrations yet. There should be at least one.
 
-![dids](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/query-01.png)
+![dids](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/query-01.png?raw=true)
 
 ## 🏁 Conclusion
 

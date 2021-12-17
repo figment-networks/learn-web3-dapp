@@ -18,7 +18,7 @@ Normally, for development, we'd want to run a local Graph node to listen for NEA
 
 Getting started with [the Hosted Service](https://thegraph.com/hosted-service/) is simply a matter of signing up using your Github login credentials. Once inside, navigate to your dashboard. This is where all the subgraphs you deploy will reside. Inside you will see an access token that is used to authorize you during deployment and the button to **Add a Subgraph**.
 
-![hosted](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/hosted-01.png)
+![hosted](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/hosted-01.png?raw=true)
 
 The site is simple and intuitive to use and although it's a centralized service, it will speed up your development because you won't need to install or run anything locally.
 

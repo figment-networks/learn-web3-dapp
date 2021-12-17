@@ -4,13 +4,13 @@ Like an orchestra, your subgraph is made up of a bunch of pieces that need to pl
 
 Look for the folder called `subgraphs` and its child `near-subgraph`. It should look like this below. The manifest is the file called `subgraph.yaml`.
 
-![SG folder](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/manifest-01.png)
+![SG folder](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/manifest-01.png?raw=true)
 
 ## 🔎 Inspecting the scaffolded file
 
 Open the `subgraph.yaml` file and have a read through the comments. Generally speaking, you'll tweak those fields for your situation.
 
-![Manifest file](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/manifest-02.png)
+![Manifest file](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/manifest-02.png?raw=true)
 
 Under the `source` key we find `account` and `startBlock`. Account needs to point to the contract account you want to work with. StartBlock tells the Hosted Service to start indexing from a certain block. It's required for NEAR considering how many blocks there are on the NEAR chain.
 

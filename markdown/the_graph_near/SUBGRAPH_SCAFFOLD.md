@@ -2,7 +2,7 @@
 
 A subgraph defines which data The Graph will index from NEAR, and how it will store it. It's made up of 3 main pieces: a manifest, a schema of entities and mappings.
 
-![Anatomy](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph/subgraph-01.png)
+![Anatomy](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph/subgraph-01.png?raw=true)
 
 In this Pathway we will go over each of them one by one, understand what they do and how they work.
 
@@ -71,8 +71,10 @@ We've made it easier to scaffold out a NEAR subgraph project by creating a branc
 git clone --branch near-graph https://github.com/VitalPointAI/near-subgraph.git
 ```
 
-Once the template has been cloned, change into the near-subgraph directory and install the dependencies with npm. Assuming you're using Gitpod, you can use the terminal command `code <filename>` to open a file, or navigate to the file in the Explorer panel and click on the filename.
-You will need to look in `subgraph.yaml`, `schema.graphql` and `src/mapping.ts`.
+Once the template has been cloned, change into the `near-subgraph` directory and install the dependencies with npm.
+
+Assuming you're using Gitpod, you can use the terminal command `code <filename>` to open a file, or navigate to the file in the Explorer panel and click on the filename.
+You can review the scaffolded files by looking in `subgraph.yaml`, `schema.graphql` and `src/mapping.ts`.
 
 ```text
 cd near-subgraph

@@ -30,16 +30,17 @@ export function handleReceipt(receipt: near.ReceiptWithOutcome): void {
 }
 ```
 
-`Account` and `Log` are the imported objects (entities) we've just defined, and `receipt` is referencing the `receiptWithOutcome` class coming from `near-subgraph/node_modules/@graphprotocol/graph-ts/chain/near.ts`. For your information, the `ReceiptWithOutcome` and `ExecutionOutcome` classes are as follows.
+`Account` and `Log` are the imported objects (entities) we've just defined, and `receipt` is referencing the `ReceiptWithOutcome` class coming from `near-subgraph/node_modules/@graphprotocol/graph-ts/chain/near.ts`. For reference, the `ReceiptWithOutcome` and `ExecutionOutcome` classes are as follows.
 
 ```typescript
 class ReceiptWithOutcome {
   outcome: ExecutionOutcome,
   receipt: ActionReceipt,
   block: Block
+}
 ```
 
-and `ExecutionOutcome` is where we get at the logs emmitted.
+and `ExecutionOutcome` is where we get at the logs emmitted, in the form of a string array.
 
 ```typescript
 class ExecutionOutcome {
@@ -50,16 +51,16 @@ class ExecutionOutcome {
       receiptIds: Array<Bytes>,
       tokensBurnt: BigInt,
       executorId: string,
-  }
+}
 ```
 
-NEAR has two types of receipts: action receipts or data receipts. Data Receipts are receipts that contain some data for some ActionReceipt with the same receiver_id. Data receipts are not currently handled by The Graph.
+NEAR has two types of receipts: ActionReceipts or DataReceipts. DataReceipts contain data for an ActionReceipt with the same `receiver_id`, but we won't go into detail on them because DataReceipts are not currently handled by The Graph.
 
 ActionReceipts are the result of a transaction execution or another ActionReceipt processing. They'll show up for one of the seven actions that might occur on NEAR: FunctionCall, TransferAction, StakeAction, AddKeyAction, DeleteKeyAction, CreateAccountAction, or DeleteAccountAction.
 
-Probably the most useful are the ActionReceipts from FunctionCall actions. That is where we'll typically add our log output in a contract to emit the log on completion of the FunctionCall. Because of that, those functionCalls are what we want The Graph to listen for.
+Probably the most useful to us are the ActionReceipts from FunctionCall actions. That is where we'll typically add our log output in a contract to emit the log on completion of the FunctionCall. Because of that, those FunctionCalls are what we want The Graph to listen for
 
-First, we'll need to grab the actions from the receipt:
+First, we'll need to grab the actions property from the receipt:
 
 ```typescript
 const actions = receipt.receipt.actions;
@@ -78,7 +79,7 @@ for (let i = 0; i < actions.length; i++) {
 }
 ```
 
-As discussed above, we want the logs that come from function calls in the contract. So we'll do this. Notice tht we first check to see if the `Account` entity exists and if it doesn't, create a new one:
+As mentioned previously, we want the logs that come from function calls in the contract. So we'll implement this functionality. Notice that we are first checking to see if the `Account` entity exists - if it doesn't, create a new one:
 
 ```typescript
 function handleAction(
@@ -87,13 +88,13 @@ function handleAction(
   blockHeader: near.BlockHeader,
   outcome: near.ExecutionOutcome
 ): void {
+
   if (action.kind != near.ActionKind.FUNCTION_CALL) {
     log.info("Early return: {}", ["Not a function call"]);
     return;
   }
-  let account: Account
-  if (account == null) {
-  let account = new Account(receipt.signerId);
+
+  let accounts = new Account(receipt.signerId);
   const functionCall = action.toFunctionCall();
   ...
 ```
@@ -107,7 +108,7 @@ if (functionCall.methodName == "putDID") {
 
 When the `putDID` function is called, The Graph processes its ActionReceipt and puts the logs in an array of `outcome.logs`.
 
-So, first we want to create a new Log and then check that the function actually emitted a log. If it did, we get the receiptID and set it to logs.id:
+We want to create a new Log and then check that the function call actually emitted a log. If it did, we get the receipt's signerId and set it to logs.id:
 
 ```typescript
 let logs = new Log(`${receiptId}`);
@@ -115,7 +116,7 @@ let logs = new Log(`${receiptId}`);
     logs.id = receipt.signerId;
 ```
 
-Knowing there is now a log, we want to take the string and parse it to a JSON object. We do that like so:
+Knowing there is now a log that we can use, we want to parse the string into a JSON object. We do that like so:
 
 ```typescript
 let parsed = json.fromString(outcome.logs[0])
@@ -123,7 +124,7 @@ let parsed = json.fromString(outcome.logs[0])
     let entry = parsed.toObject()
 ```
 
-At this point we have a JSON object in entry. Let's take another look at a NEP 171 log:
+At this point we have a JSON object stored in `entry`. Let's take another look at the NEP-171 log format
 
 ```typescript
 logging.log(`{"EVENT_JSON":{
@@ -141,14 +142,14 @@ logging.log(`{"EVENT_JSON":{
 In addition to the overall top level object we just parsed, there are two more objects: EVENT_JSON and data. We will need to create objects out of each of those as well. Starting with EVENT_JSON:
 
 ```typescript
-//EVENT_JSON
+// EVENT_JSON
 let eventJSON = entry.entries[0].value.toObject();
 ```
 
 Now we will want to loop through each of the object's keys and assign the values to their corresponding entity properties like so:
 
 ```typescript
-//standard, version, event (these stay the same for a NEP 171 emmitted log)
+// standard, version, event (these stay the same for a NEP 171 emmitted log)
 for (let i = 0; i < eventJSON.entries.length; i++) {
   let key = eventJSON.entries[i].key.toString();
   switch (true) {
@@ -167,10 +168,10 @@ for (let i = 0; i < eventJSON.entries.length; i++) {
 
 > See how the keys in the switch statement match the keys in the log emitted from the contract? Notice how the keys also correspond to the entity property names and types?
 
-And we do the same thing for the data object:
+We'll also repeat this for the `data` object:
 
 ```typescript
-//data
+// data
 let data = eventJSON.entries[0].value.toObject();
 for (let i = 0; i < data.entries.length; i++) {
   let key = data.entries[i].key.toString();
@@ -193,7 +194,7 @@ for (let i = 0; i < data.entries.length; i++) {
 
 At last, we call `logs.save()` and then push the log onto the account entity with `accounts.log.push(logs.id)`.
 
-## 🧑🏼‍💻 Your turn! Implementing the init function of the did.near contract
+## 🧑🏼‍💻 Your turn! Implement the init function of the did.near contract
 
 We implemented part of the receipt handler. Can you finish it, by adding the code for the init function?
 
@@ -203,7 +204,7 @@ We implemented part of the receipt handler. Can you finish it, by adding the cod
     log.info('Not processed - FunctionCall is: {}', [functionCall.methodName]);
   }
 
-  // Your turn! Write underneath that code, but before account.save();
+  // Your turn! Write underneath that code, but before accounts.save();
   // ---------------------------------------------------------------------
   // - implement an if statement to find the appropriate function call
   // - if it is there, set the receiptId
@@ -227,7 +228,7 @@ We implemented part of the receipt handler. Can you finish it, by adding the cod
 
 ## 😅 Solution
 
-Your `src/mapping.ts` should look like this:
+Make sure that you have added this code to your `subgraphs/near-subgraph/src/mapping.ts` before continuing:
 
 ```typescript
 // solution
@@ -295,19 +296,21 @@ if (functionCall.methodName == 'init') {
 
 Before you can deploy to The Hosted Service you'll need to create a place for it.
 
-1. Go to your Hosted Service dashboard and click Add Subgraph.
+1. Go to your Hosted Service dashboard and click **Add Subgraph**.
 
-2. Fill out the form. You can select an image for your subgraph, give it a name, subtitle, description, github url and link it to an account. You can also choose whether it is hidden from others or available to all.
+2. Fill out the form. You can select an image for your subgraph, give it a name, subtitle, description, GitHub URL and link it to an account. You can also choose whether it is hidden from others or available to all.
 
 > Once your subgraph is deployed, it needs to have activity on it to remain active. If there are no queries for more than 30 days, you'll need to redeploy it in order for the Hosted Service to start indexing it again.
 
-Next, we'll need to update `package.json`'s deploy command to include the name of the subgraph you just created on the Hosted Service. Find this line in `package.json`:
+Next, we'll need to update `near-subgraph/package.json`'s deploy command to include the name of the subgraph you just created on the Hosted Service. Find this line in `near-subgraph/package.json`:
 
 ```json
 "deploy": "graph deploy <GITHUBNAME/SUBGRAPH> --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
 ```
 
-Replace <GITHUBHAME/SUBGRAPH> with the name of your subgraph. For example:
+Replace <GITHUBHAME/SUBGRAPH> with the name of your subgraph. Note that this is the same as the last part of the Queries (HTTP) url in the dashboard. For example:
+
+`https://api.thegraph.com/subgraphs/name/ALuhning/DID-Registry` -> `ALuhning/DID-Registry`
 
 ```json
 "deploy": "graph deploy ALuhning/DID-Registry --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
@@ -335,8 +338,8 @@ What do those three commands do?
 
 Now if you visit your subgraph in your dashboard, you can click on the Logs and see it starting to scan the NEAR mainnet for logs emitted by the functions in the did.near contract.
 
-![terminal](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/mapping-01.gif)
+![terminal](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/the-graph-near/mapping-01.gif?raw=true)
 
 ## ✅ Make sure it works
 
-Now it's time for you to verify that you have followed the instructions carefully. Click on the **Check subgraph deployment** button on the right to check that your subgraph has been deployed to the Hosted Service.
+Now it's time for you to verify that you have followed the instructions carefully. Copy and paste the endpoint URL from your dashboard (the one under Queries (HTTP)!) then click on the **Check subgraph deployment** button on the right to check that your subgraph has been deployed to the Hosted Service.
