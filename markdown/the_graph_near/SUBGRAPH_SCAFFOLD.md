@@ -1,3 +1,7 @@
+## 🎥 Video Walkthrough of Scaffolding a NEAR Subgraph
+
+{% embed url="https://www.youtube.com/watch?v=CY5BLvcY4TA" caption="Scaffolding a NEAR Subgraph" %}
+
 ## 🌐 What's a subgraph?
 
 A subgraph defines which data The Graph will index from NEAR, and how it will store it. It's made up of 3 main pieces: a manifest, a schema of entities and mappings.

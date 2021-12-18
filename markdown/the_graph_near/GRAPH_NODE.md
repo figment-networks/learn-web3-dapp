@@ -1,3 +1,7 @@
+## 🎥 Video Walkthrough of The Graph's Hosted Service
+
+{% embed url="https://www.youtube.com/watch?v=muL4vzqc9nQ" caption="The Graph's Hosted Service" %}
+
 ## 📈 A word about The Graph Hosted Service
 
 Using The Graph to index data from the NEAR blockchain currently means you need to use the Hosted Service. It is possible to run a local Graph node but the process for setting it up is currently not documented. The Graph provides the Hosted Service as an alternative to running your own Graph node. The Hosted Service will eventually shut down as The Graph reaches feature parity with its decentralized network of graph nodes.

@@ -1,3 +1,7 @@
+## 🎥 Video Introduction of The Graph for NEAR
+
+{% embed url="https://www.youtube.com/watch?v=qlTUkeNKe7g" caption="Learn The Graph for NEAR" %}
+
 ## 🤔 What's The Graph for NEAR?
 
 Prior to embarking on this learning pathway we recommend completing both the NEAR and The Graph pathways. They aren't required, but you will probably find the background useful as you move through these lessons.
@@ -17,16 +21,9 @@ If you want to read more about The Graph and it's support for NEAR Protocol we'v
 
 ---
 
-## 🎥 Video Walkthrough
+## 🎥 Video Walkthroughs
 
-Here is a comprehensive video walkthrough of the Pathway to help you understand what is going on at every step!
-
-{PLACEHOLDER FOR VIDEO WALKTHROUGH}
-
-- Create a subgraph scaffold @
-- Tweaking the manifest @
-- Define the schema @
-- Implement the mappings @
+Each lesson includes a video walkthrough for the information being taught in the lesson as a visual reference.
 
 ---
 

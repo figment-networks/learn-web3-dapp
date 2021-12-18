@@ -1,3 +1,7 @@
+## 🎥 Video Walkthrough of the Subgraph Manifest
+
+{% embed url="https://www.youtube.com/watch?v=ifqhNZmyfD8" caption="The Subgraph Manifest" %}
+
 ## 📜 What's a "manifest"?
 
 Like an orchestra, your subgraph is made up of a bunch of pieces that need to play nicely together for the music to sound good. Think of the manifest as the conductor: it sits in the middle and coordinates everything.

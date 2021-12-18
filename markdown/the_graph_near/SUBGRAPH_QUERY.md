@@ -1,3 +1,7 @@
+## 🎥 Video Walkthrough of Querying the NEAR Subgraph
+
+{% embed url="https://www.youtube.com/watch?v=SnMQjraROOE" caption="Querying the NEAR Subgraph" %}
+
 ## 🕵🏻 Querying the subgraph
 
 After deploying the subgraph, we need to wait a little in order for it to sync with the NEAR mainnet. It will scan past blocks starting at the `startBlock` you specified in `subgraph.yaml` to find receipts and then listen for any new receipts.

@@ -1,3 +1,7 @@
+## 🎥 Video Walkthrough of the Subgraph Schema
+
+{% embed url="https://www.youtube.com/watch?v=cIllX_fFTuc" caption="The Subgraph Schema" %}
+
 ## 🪢 Entities and relations
 
 We just tweaked the manifest to declare what information we were looking for. We declared one entity called `Account` and another called `Log`. Now we need to implement them by defining what attributes they have and specifying their types.

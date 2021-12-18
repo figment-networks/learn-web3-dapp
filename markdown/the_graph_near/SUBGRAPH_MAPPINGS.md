@@ -1,4 +1,8 @@
-## 🗺 Mapping events to entities
+## 🎥 Video Walkthrough of Mapping Logs to Entities
+
+{% embed url="https://www.youtube.com/watch?v=9VbsciALVLY" caption="Mapping Logs to Entities" %}
+
+## 🗺 Mapping logs to entities
 
 Remember in the "Tweak the manifest" step we defined a receipt handler? It looked like this:
 
@@ -291,6 +295,10 @@ if (functionCall.methodName == 'init') {
 }
 // ...
 ```
+
+## 🎥 Video Walkthrough of Generating, Building and Deploying Your NEAR Subgraph
+
+{% embed url="https://www.youtube.com/watch?v=fSBr1IpSOiA" caption="Generating, Building, and Deploying Your NEAR Subgraph" %}
 
 ## 🚀 Deploy your subgraph
 
