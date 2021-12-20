@@ -26,7 +26,7 @@ For Ethereum contracts, you can go to Etherscan and lookup the contract address 
 
 Ethereum contracts have ABIs (Application Binary Interface). It defines the methods and structures that can be used to interact with that binary contract and what shape of data you'll get back.
 
-NEAR contracts compile to webAssembly (WASM) and don't have ABIs so it's not as easy to find the data NEAR contracts are emitting. Etherscan support is coming some day, but until then you either know what's being emitted in the logs because you are the developer or you need to go through the code in a Github repo to figure it out.
+NEAR contracts compile to webAssembly (WASM) and don't have ABIs so it's not as easy to find the data NEAR contracts are emitting. Etherscan support is coming some day, but until then you either know what's being emitted in the logs because you are the developer, you need to go through the code in a Github repo, or go through transactions in the [NEAR block explorer](https://explorer.near.org) to figure it out.
 
 Recently, NEAR enhancement proposal 171 ([NEP-171](https://github.com/near/NEPs/blob/master/specs/Standards/NonFungibleToken/Event.md)) defined an event format primarily aimed at NFTs. However, it's also a useful standard for developers to use in other contracts. So if looking through code, you may come across something like this from a contract coded with AssemblyScript:
 
