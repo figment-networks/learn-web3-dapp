@@ -20,3 +20,18 @@ export function fetchMarkdownForChainId(chainId: CHAINS): MarkdownForChainIdT {
     return markdownMap;
   }, {} as MarkdownForChainIdT);
 }
+
+export function getMarkdownForStepId(
+  chainId: CHAINS,
+  stepId: PROTOCOL_STEPS_ID,
+): string {
+  const filePath =
+    stepId === PROTOCOL_STEPS_ID.PREFACE
+      ? path.join(MARKDOWN_PATH, `PREFACE.md`)
+      : path.join(MARKDOWN_PATH, chainId, `${stepId}.md`);
+
+  const fileContent = fs.readFileSync(filePath, 'utf-8');
+  const markdown = fileContent.toString();
+
+  return markdown;
+}

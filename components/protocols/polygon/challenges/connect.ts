@@ -6,11 +6,11 @@ declare let window: {
 
 const connect = async () => {
   try {
-    const provider = undefined;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
     if (provider) {
-      await undefined;
-      const signer = undefined;
-      const address = undefined;
+      await provider.send('eth_requestAccounts', []);
+      const signer = provider.getSigner();
+      const address = await signer.getAddress();
       return {
         address,
       };

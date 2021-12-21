@@ -1,10 +1,11 @@
 import {Col, Alert, Space, Typography, Button} from 'antd';
-import {useGlobalState} from 'context';
-import {getInnerState, getChainLabel} from 'utils/context';
 import {PoweroffOutlined} from '@ant-design/icons';
 import {useEffect, useState} from 'react';
 import Confetti from 'react-confetti';
 import axios from 'axios';
+
+import {getInnerState, getChainLabel} from 'utils/context';
+import {useGlobalState} from 'context';
 
 const {Text} = Typography;
 

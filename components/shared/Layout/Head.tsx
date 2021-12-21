@@ -1,6 +1,11 @@
 import Head from 'next/head';
 
-export default function HeadLayout({label}: {label: string}) {
+import {useGlobalState} from 'context';
+import {getChainLabel} from 'utils/context';
+
+export default function HeadLayout() {
+  const {state} = useGlobalState();
+  const label = getChainLabel(state);
   return (
     <Head>
       <title>{`Figment Learn - ${label} Pathway`}</title>

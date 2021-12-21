@@ -56,7 +56,7 @@ Still not sure how to do this? No problem! The solution is below so you don't ge
 
 # ✅ Make sure it works
 
-## Once the code in `pages/api/near/keypair.ts` is complete, Next.js will rebuild the API route. Now click on **Generate a Keypair** to make your first NEAR keypair.
+Once the code in `pages/api/near/keypair.ts` is complete, Next.js will rebuild the API route. Now click on **Generate a Keypair** to make your first NEAR keypair.
 
 # 🏁 Conclusion
 

@@ -267,6 +267,11 @@ export type LocalStorageStateT = {
 
 export type LocalStorageProtocolStateT = {
   currentStepId: PROTOCOL_STEPS_ID;
+  steps: {
+    [Key in PROTOCOL_STEPS_ID]: {
+      isCompleted: boolean;
+    };
+  };
   innerState?: InnerStateT;
 };
 

@@ -30,7 +30,6 @@ const Ceramic: React.FC = () => {
     <Web3AuthProvider ceramicNodeUrl={nodeUrl} identityStore={identityStore}>
       <div key={stepId}>
         <Nav />
-        {stepId === PROTOCOL_STEPS_ID.PROJECT_SETUP}
         {stepId === PROTOCOL_STEPS_ID.CHAIN_CONNECTION && <Connect />}
         {stepId === PROTOCOL_STEPS_ID.LOGIN && <LogIn />}
         {stepId === PROTOCOL_STEPS_ID.BASIC_PROFILE && <BasicProfile />}

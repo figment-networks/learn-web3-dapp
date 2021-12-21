@@ -6,7 +6,7 @@ const useLocalStorage = <StateT>(key: string, initialValue?: StateT) => {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      return initialValue;
+      return {};
     }
   });
 

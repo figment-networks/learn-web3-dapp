@@ -13,7 +13,7 @@ In `pages/api/solana/transfer.ts` finish implementing the `transfer()` function.
 **Take a few minutes to figure this out.**
 
 ```typescript
-//.. let's snip the beginning as it should be familiar for you by now!
+//.. let's skip the beginning as it should be familiar for you by now!
 // Find the parameter to pass
 const instructions = SystemProgram.transfer;
 
@@ -42,7 +42,7 @@ Still not sure how to do this? No problem! The solution is below so you don't ge
 
 ```typescript
 // solution
-//... let's snip the beginning as it should be familiar for you by now!
+//... let's skip the beginning as it should be familiar for you by now!
 const instructions = SystemProgram.transfer({
   fromPubkey,
   toPubkey,

@@ -2,6 +2,7 @@ import {CHAINS, ChainPropT} from 'types';
 import {Celo} from 'components/protocols';
 import Layout from 'components/shared/Layout';
 import {getStaticPropsForChain} from 'utils/pages';
+import NoSSR from 'react-no-ssr';
 
 export async function getStaticProps() {
   return getStaticPropsForChain(CHAINS.CELO);
@@ -10,9 +11,11 @@ export async function getStaticProps() {
 const Protocol = (props: ChainPropT) => {
   const {markdown, chain} = props;
   return (
-    <Layout markdown={markdown} chain={chain}>
-      <Celo />
-    </Layout>
+    <NoSSR>
+      <Layout markdown={markdown} chain={chain}>
+        <Celo />
+      </Layout>
+    </NoSSR>
   );
 };
 

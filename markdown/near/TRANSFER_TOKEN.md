@@ -81,8 +81,6 @@ Once you have the code above saved:
 - Fill in the amount of **NEAR** you want to send to `pizza.testnet`.
 - Click on **Submit Transfer**.
 
-![](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/near/near-transfer.gif)
-
 ---
 
 # 🏁 Conclusion

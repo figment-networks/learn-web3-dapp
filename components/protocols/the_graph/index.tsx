@@ -9,7 +9,6 @@ const TheGraph: React.FC = () => {
 
   return (
     <>
-      {stepId === PROTOCOL_STEPS_ID.PROJECT_SETUP}
       {stepId === PROTOCOL_STEPS_ID.GRAPH_NODE && <Steps.Node />}
       {stepId === PROTOCOL_STEPS_ID.SUBGRAPH_SCAFFOLD && <Steps.Subgraph />}
       {stepId === PROTOCOL_STEPS_ID.SUBGRAPH_MANIFEST && <Steps.Manifest />}

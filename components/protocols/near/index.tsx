@@ -18,7 +18,6 @@ const Near: React.FC = () => {
         network={network}
         accountExplorer={accountExplorer(network)}
       />
-      {stepId === PROTOCOL_STEPS_ID.PROJECT_SETUP}
       {stepId === PROTOCOL_STEPS_ID.CHAIN_CONNECTION && <Steps.Connect />}
       {stepId === PROTOCOL_STEPS_ID.CREATE_KEYPAIR && <Steps.Keypair />}
       {stepId === PROTOCOL_STEPS_ID.CREATE_ACCOUNT && <Steps.Account />}
