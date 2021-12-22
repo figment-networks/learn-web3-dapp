@@ -51,7 +51,7 @@ In a code editor, a subgraph will be a folder with a few different folders and f
 We will need The Graph Cli installed to generate, build, and deploy the subgraphs to the Hosted Service. Install the CLI by running:
 
 ```text
-npm install -g add @graphprotocol/graph-cli
+npm install -g @graphprotocol/graph-cli
 ```
 
 Verify the installation was successful by running `graph` in your Terminal. You should see:
