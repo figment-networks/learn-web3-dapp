@@ -14,7 +14,7 @@ In this Pathway we will go over each of them one by one, understand what they do
 
 On NEAR we don't have events (at least not yet) like we do on Ethereum. The Graph for NEAR indexes blocks and receipts. The receipts may contain logs if a developer codes them in (ideally in a standard JSON format). So the first thing we need to do is pick the NEAR contract account our subgraph will be listening to.
 
-> Note: at this time we can only connect to contract accounts on `near-mainnet`. Testnet support is in the works.
+> Note: you can connect to contract accounts on `near-mainnet` or `near-testnet`.
 
 For the purpose of this tutorial we created and deployed a contract account that we know is emmitting logs in JSON format so we have something to work with. It's a registry contract that enables people to register and associate their NEAR account with a decentralized identifier (DID) created on the Ceramic Network.
 
