@@ -17,7 +17,7 @@ services:
       postgres_pass: let-me-in
       postgres_db: graph-node
       ipfs: 'ipfs:5001'
-      ethereum: '${ETHEREUM_RPC:-localhost:http://host.docker.internal:8545}'
+      near: '${ETHEREUM_RPC:-mainnet:https://rpc.mainnet.near.org}'
       RUST_LOG: info
       GRAPH_LOG: info
   ipfs:
