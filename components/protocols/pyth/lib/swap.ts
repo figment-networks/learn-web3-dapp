@@ -159,7 +159,11 @@ export class JupiterSwapClient {
         `inputAmount=${swapResult.inputAmount} outputAmount=${swapResult.outputAmount}`,
       );
     }
-    return {...swapResult, txIds: [swapResult.txid]}; // fit the swapResult interface
+    return {
+      txIds: [swapResult.txid],
+      inAmount: swapResult.inputAmount,
+      outAmount: swapResult.outputAmount,
+    };
   }
 }
 
