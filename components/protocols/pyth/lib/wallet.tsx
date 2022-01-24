@@ -7,6 +7,7 @@ import {useCallback, useEffect, useState} from 'react';
 import useSWR from 'swr';
 import {SOLANA_NETWORKS} from 'types';
 import {JupiterSwapClient, OrcaSwapClient, SwapResult} from './swap';
+import {useLocalStorage} from './useLocalStorage';
 
 interface WalletBalance {
   sol_balance: number;
@@ -34,7 +35,7 @@ export const useExtendedWallet = (
   cluster: Cluster,
   price: number = 0,
 ) => {
-  const [secretKey, setSecretKey] = useState<string | undefined>(undefined);
+  const [secretKey, setSecretKey] = useLocalStorage('secretKey', undefined);
 
   const [keyPair, setKeyPair] = useState<Keypair>(Keypair.generate());
   useEffect(() => {
