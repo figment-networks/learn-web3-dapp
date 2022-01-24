@@ -1,8 +1,8 @@
-To better understand and derive value from the Pyth price information for a given product, we'll want to visualize the data in a meaningful format. A line chart is a basic way to display an increase or decrease in a value over time, so we will look at how to effectively represent our price data using a pre-made component library called [recharts](https://recharts.org/).
+To better understand and derive value from the Pyth price data for a given product (SOL/USDC), we'll want to visualize that data in a meaningful format. A line chart is a basic way to display an increase or decrease in a value over time, so we will look at how to effectively represent our price data using a pre-made component library called [recharts](https://recharts.org/).
 
-This helps to illustrate the price data coming from Pyth and also sets the stage for us to be able to to perform buy/sell operations using a Decentralized Exchange. We'll be calculating our buy and sell signals based on the Exponential Moving Average (EMA) which is a naive and un-opinionated method of achieving a yield. There are more complex ways of deciding when and how much to trade, which are all well beyond the scope of this pathway. Using the EMA, as long as the price trends upwards for the amount of time you are trading, you would expect to see a positive yield since you're just buying low and selling as the price rises.
+This helps to illustrate the price data coming from Pyth and also sets the stage for us to be able to to perform buy/sell operations using a Decentralized Exchange. We'll be calculating our buy and sell signals based on the Exponential Moving Average (EMA) which is a naive and un-opinionated method of achieving a yield. There are more complex ways of deciding when and how much to trade, which are all beyond the scope of this pathway. Using the EMA, as long as the price trends upwards for the amount of time you are trading, you would expect to see a positive yield. Since this is an exercise in buying low and selling as the price rises, it's simple enough to avoid spending over your target by stopping the liquidation bot.
 
-We need to calculate the Simple Moving Average (SMA) as well, to kickstart the EMA with a point of reference. This is why you will not see the green line representing the EMA on the chart right away when starting it up the first time.
+First, we need to calculate the Simple Moving Average (SMA), to kickstart the EMA with a point of reference. This is why you will not see the green line representing the EMA on the chart right away when starting it up.
 
 Slightly separate topics, though worth considering if you wish to build upon the basics of this Pathway: What is a novel and interesting way to calculate when to buy and when to sell? Are there ways in which you might safeguard against a particularly wide confidence interval, or even a sudden shock to the market?
 
@@ -10,7 +10,7 @@ Slightly separate topics, though worth considering if you wish to build upon the
 
 # 👀 Charting Pyth data
 
-The component being rendered on the right is defined in `components/protocols/pyth/components/ChartMock.tsx`, which contains both the price feed component from the Connect step and the Chart component defined in `components/protocols/pyth/components/Chart.tsx`.
+The component being rendered on the right is defined in `components/protocols/pyth/components/ChartMock.tsx`, which contains both the price feed component from the Connect step and the Chart component defined in `components/protocols/pyth/components/Chart.tsx`. Turning on the price feed will populate the chart, by passing the data to the Chart component. You can probably tell where we're going with this 😉
 
 ```jsx
 // components/protocols/pyth/components/ChartMock.tsx
@@ -20,12 +20,6 @@ The component being rendered on the right is defined in `components/protocols/py
 </Card>
 // ...
 ```
-
----
-
-# 🧱 Building the Chart component
-
-We will use the [recharts](https://github.com/recharts/recharts#recharts) library to display Pyth price data as an animated chart. There is a concise [getting Started](https://recharts.org/en-US/guide/getting-started) guide on the recharts website which should bring you up to speed for reading the contents of `components/protocols/pyth/components/Chart.tsx`.
 
 ---
 
@@ -125,7 +119,11 @@ We can add a `setData` hook to the `getPythData` function that we created in our
             const currentEma =
               (newData.price - previousEma) * smoothingFactor + previousEma;
             newData.ema = currentEma;
+```
 
+This next piece of code is how we are defining our buy and sell signals based on the trend of the EMA. Pivoting on the value being entered for the `yieldExpectation`, we can make a simple calculation to emit a **buy** signal if the trend is greater than our expected yield, otherwise emit a **sell** signal. The `signalListener` is an instance of an `EventEmitter` (read more about [the `events` module](https://nodejs.org/api/events.html#events) and [EventEmitters](https://nodejs.org/api/events.html#class-eventemitter) if you need to brush up) - this essentially lets us run any functions listening to the event when it is triggered. We can just emit the event here in our code and know that the relevant functions to add the orders to the order book will be called. We'll touch on this again soon, when we're performing our token swaps.
+
+```typescript
             /**
              * Trend of the price with respect to preview EMA.
              * If the price is higher than the EMA, it is a positive trend.
@@ -150,15 +148,13 @@ We can add a `setData` hook to the `getPythData` function that we created in our
 
 - The returned `data` is what we are passing to the Chart component.
 
-# 🌱 Bringing the Chart to life
+---
 
-Clicking on the price feed toggle switch will begin fetching price data from Pyth and passing it along to the Chart component. The green line indicating the EMA will not appear at first, because an exponential moving average requires a historical value to be calculated against. After a few seconds, the green line indicating the EMA will appear and begin tracking along the chart. You will notice that it does not precisely follow Pyth's reported price. In most cases, it will fall within the range of the confidence interval - however there can be cases where it appears to fall outside of the confidence interval. You can coroborate using the Simple moving average You can inspect the actual values at a given time by moving your mouse cursor over the chart.
+# 🧱 Building the Chart component
 
-![EMA Outside Confidence Interval](ema_outside_confidence.png)
+There is a concise [getting started guide](https://recharts.org/en-US/guide/getting-started) on the recharts website which should bring you up to speed for reading the contents of `components/protocols/pyth/components/Chart.tsx`. There isn't anything complicated going on with this component, but let's quickly break down the code for better understanding.
 
-The `CustomizedHistoricalHourAxisTick` is used to display the vertically oriented timestamps at the bottom of the chart. There are what we'll see for the short period of time we're running the chart here. `CustomizedHistoricalDayAxisTick` is used when displaying the larger time ranges. The chart has a dropdown menu to select the time range for displaying data - however we are not storing the chart data anywhere in this app and so the DAY and WEEK settings are mainly for illustrative purposes.
-
-The Chart component is deceptively simple, most of it is setting up how the chart will look. Recharts has a declarative style, which makes it easy to follow the display logic and see where the values are being passed. We already calculated our SMA / EMA in the `ChartMock.tsx` component, and now they'll be displayed alongside the Pyth price data.
+The beginning of the file is where we import any other code we need, including the antd Select dropdown menu and the recharts components. This component has a single `useEffect`, which contains `data` in the dependency array - so any time the `data` changes, this component will re-render. All we're doing is making sure that the data exists by checking that the length is greater than zero, and then setting the domain for our chart data. The entire `data` object, as defined in `ChartMock.tsx` will be passed to the rechart `AreaChart` component. The rest of this component is effectively passing properties to the components and defining the style of the chart. No need to focus on this part unless you're very particular about how the information is displayed. You might want to change the colors, or even try a completely different style of chart. The recharts library is fast and quite flexible.
 
 ```typescript
 // components/protocols/pyth/components/Chart.tsx
@@ -233,7 +229,11 @@ export const Chart: React.FC<{data: any}> = ({data}) => {
     </>
   );
 };
+```
 
+The `CustomizedHistoricalHourAxisTick` is used to display the vertically oriented timestamps at the bottom of the chart. These are what we'll see for the short period of time we're running the chart here. `CustomizedHistoricalDayAxisTick` is used when displaying the larger time ranges. The chart has a dropdown menu to select the time range for displaying data - however we are not storing the chart data anywhere in this app and so the DAY and WEEK settings are mainly for illustrative purposes.
+
+```typescript
 const CustomizedHistoricalHourAxisTick = ({x, y, fill, payload}) =>
   payload.value ? (
     <g transform={`translate(${x},${y})`}>
@@ -276,6 +276,16 @@ const CustomizedHistoricalDayAxisTick = ({x, y, fill, payload}) =>
 
 ---
 
+# 🌱 Bringing the Chart to life
+
+The Chart component is deceptively simple, most of it is setting up how the chart will look. Recharts has a declarative style, which makes it easy to follow the display logic and see where the values are being passed. We already calculated our SMA / EMA in the `ChartMock.tsx` component, and now they'll be displayed alongside the Pyth price data as red and green lines.
+
+Clicking on the price feed toggle switch will begin fetching price data from Pyth and passing it along to the Chart component. The green line indicating the EMA will not appear at first, because an exponential moving average requires a historical value to be calculated against. One thing to notice is how the SMA does not react to changes in the price in the same way that the EMA does. After a few seconds, the green line indicating the EMA will appear and begin tracking along the chart. You will notice that it does not precisely follow Pyth's reported price. In most cases, it will fall within the range of the confidence interval - however there can be cases where it appears to fall outside of the confidence interval. You can coroborate using the Simple moving average if you like. You can inspect the actual values at a given tick by moving your mouse cursor over the chart, which will display the Tooltip.
+
+![EMA Outside Confidence Interval](ema_outside_confidence.png)
+
+---
+
 # 🏋️ Challenge
 
 {% hint style="tip" %}
@@ -309,16 +319,14 @@ Still not sure how to do this? No problem! The solution is below so you don't ge
 
 **What happened in the code above?**
 
--
-
----
+- ***
 
 # ✅ Make sure it works
 
-?
+Once you've completed the code and saved the file, the Next.js development server will rebuild the page. Now, turning the price feed on will populate the chart. Don't forget to turn the price feed off before moving to the next step 😄.
 
 ---
 
 # 🏁 Conclusion
 
-?
+We looked at how to display Pyth price data using the recharts components. We briefly touched on how to calculate an Exponential Moving Average and how that informs the buy and sell signals for our liquidation bot. We are able to see how the price data is reflected on the chart, along with the plotted lines for the Simple Moving Average and the Exponential Moving Average.

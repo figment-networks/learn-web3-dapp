@@ -62,7 +62,7 @@ const Exchange = () => {
     .toString()
     .slice(0, 6)}...${keyPair.publicKey.toString().slice(38, 44)}`;
 
-  // state for tracking user worth with current Market Price.
+  // State for tracking user worth with current Market Price.
   const [worth, setWorth] = useState({initial: 0, current: 0});
 
   useEffect(() => {
@@ -115,7 +115,7 @@ const Exchange = () => {
       resetWallet();
     });
     const buy = Rx.fromEvent(signalListener, 'buy').pipe(Rx.mapTo(1)); // for reduce sum function to understand the operation.
-    const sell = Rx.fromEvent(signalListener, 'sell').pipe(Rx.mapTo(-1)); /// for reduce sum function to understand the operation.
+    const sell = Rx.fromEvent(signalListener, 'sell').pipe(Rx.mapTo(-1)); // for reduce sum function to understand the operation.
     Rx.merge(buy, sell)
       .pipe(
         Rx.tap((v: any) => console.log(v)),
@@ -255,20 +255,6 @@ const Exchange = () => {
     <Col>
       <Space direction="vertical" size="large">
         <Space direction="horizontal">
-          <Card
-            size="small"
-            title={symbol}
-            style={{width: 400}}
-            extra={
-              <Switch
-                checkedChildren={<SyncOutlined spin />}
-                unCheckedChildren={'Price feed Off'}
-                onChange={getPythData}
-              />
-            }
-          >
-            <Statistic value={price} prefix={<DollarCircleFilled />} />{' '}
-          </Card>
           <Card title={'Yield Expectation'} size={'small'}>
             <InputNumber
               value={yieldExpectation}

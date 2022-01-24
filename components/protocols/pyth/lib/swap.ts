@@ -2,8 +2,26 @@ import {Cluster, Connection, Keypair, PublicKey} from '@solana/web3.js';
 import {Jupiter, RouteInfo, TOKEN_LIST_URL} from '@jup-ag/core';
 import Decimal from 'decimal.js';
 import {getOrca, Network, OrcaPoolConfig} from '@orca-so/sdk';
-import {encode} from 'bs58';
+import * as bs58 from 'bs58';
 
+/**
+ * Logging the Keypair object, you'll notice that the publicKey is a 32-byte UInt8Array & the secretKey is the entire 64-byte UInt8Array
+ * The first 32 bytes of the array are the secret key and the last 32 bytes of the array are the public key
+ * console.log(_account)
+ *
+ * This returns the entire UInt8Array of 64 bytes
+ * console.log(_account.secretKey)
+ *
+ * The secret key in base58 encoding: 4WoxErVFHZSaiTyDjUhqd6oWRL7gHZJd8ozvWWKZY9EZEtrqxCiD8CFvak7QRCYpuZHLU8FTGALB9y5yenx8rEq3
+ * console.log(bs58.encode(_account.secretKey));
+ *
+ * The publicKey property is either a UInt8Array or a BigNumber:
+ * PublicKey { _bn: <BN: 7dfd7f354726fed61eaa4745502e344c65f622106004a427dc58b8c98ab4b5ee> }
+ * console.log(_account.publicKey)
+ *
+ * The public key is commonly represented as a string when being used as an "address": 9UpA4MYkBw5MGfDm5oCB6hskMt6LdUZ8fUtapG6NioLH
+ * console.log(_account.publicKey.toString());
+ */
 const _account = Keypair.fromSecretKey(
   new Uint8Array([
     175, 193, 241, 226, 223, 32, 155, 13, 1, 120, 157, 36, 15, 39, 141, 146,
@@ -11,12 +29,9 @@ const _account = Keypair.fromSecretKey(
     125, 253, 127, 53, 71, 38, 254, 214, 30, 170, 71, 69, 80, 46, 52, 76, 101,
     246, 34, 16, 96, 4, 164, 39, 220, 88, 184, 201, 138, 180, 181, 238,
   ]),
-); // This is given for testing purposes only.
+); // This is given for testing purposes only. Do NOT use this keypair in any production code.
 
-// In base58 encoding, the secret key of the keypair above is "4WoxErVFHZSaiTyDjUhqd6oWRL7gHZJd8ozvWWKZY9EZEtrqxCiD8CFvak7QRCYpuZHLU8FTGALB9y5yenx8rEq3"
-// console.log(encode(_account.secretKey));
-
-// Interface
+// Token interface
 export interface Token {
   chainId: number; // 101,
   address: string; // '8f9s1sUmzUbVZMoMh6bufMueYH1u4BJSM57RCEvuVmFp',
@@ -26,7 +41,8 @@ export interface Token {
   logoURI: string; // 'https://i.ibb.co/pKTWrwP/true.jpg',
   tags: string[]; // [ 'utility-token', 'capital-token' ]
 }
-//
+
+// SwapResult interface
 export interface SwapResult {
   inAmount: number;
   outAmount: number;
@@ -201,18 +217,18 @@ export class OrcaSwapClient {
 
     const orcaSolPool = orca.getPool(OrcaPoolConfig.ORCA_SOL); // Orca pool for SOL
     const orcaToken = orcaSolPool.getTokenA(); // SOL token
-    // const solAmount = new Decimal(size);
+    const solAmount = new Decimal(size);
     const quote = await orcaSolPool.getQuote(orcaToken, orcaAmount);
     const solAmount = quote.getMinOutputAmount();
     console.log(
       `Swap ${orcaAmount.toNumber()} ORCA for at least ${solAmount.toString()} SOL `,
     );
+    // orcaAmount is included because in the Orca smart contract there's a condition if the swap produces
+    // less than the amount requested, the transaction will fail and the user will keep their SOL.
     const swapPayload = await orcaSolPool.swap(
       this.keypair,
       orcaToken,
       solAmount,
-      // orcaAmount is here because in the Orca smart contract there's a condition if the swap produces
-      // less than the amount I requested, the transaction will fail and I will keep my SOL.
       orcaAmount,
     );
 

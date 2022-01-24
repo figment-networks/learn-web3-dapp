@@ -13,7 +13,7 @@ To complete this project, we must implement the following:
 
 The purpose of this Pathway is to explain details of using Pyth and give you hands-on experience by incorporating price data into a useful application. Unrelated to Pyth itself yet still important, the rest of the components will strengthen your understanding of how to visualize market fluctuations on a chart and perform swaps on a Decentralized Exchange.
 
-In essence the "bot" we are building is more like Wall-E than The Terminator, we're oriented on having fun and learning more than ruthless efficiency.
+In essence the "bot" we are building is more like Wall-E than The Terminator. We're oriented on having fun and learning more than ruthless efficiency.
 
 ![Wall-E and The Terminator](walle-terminator.jpg)
 

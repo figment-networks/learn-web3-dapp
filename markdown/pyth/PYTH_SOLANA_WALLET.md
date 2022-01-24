@@ -1,15 +1,16 @@
-Now that we are able to get Pyth price data, we need to take a detour away from Pyth for a moment to get our wallet interface figured out. The liquidation bot is going to need some tokens to trade on our behalf! We want to be able to leverage that data and interact with a Decentralized Exchange to swap tokens. We're going to implement a display of our wallet balances on the front-end, so that we can keep an eye on the changes as the liquidation bot is performing the swaps. We have two different displays to consider, the **mock wallet** to be used for learning and testing purposes and also a **live wallet** - pulling data from an existing, funded wallet that can be used on either devnet or mainnet.
+Now that we are able to get Pyth price data, we need to take a detour away from Pyth for a moment to get our account interface figured out. The liquidation bot is going to need some tokens to trade on our behalf! We want to be able to leverage that data and interact with a Decentralized Exchange to swap tokens. We're going to look at how to implement a display of our token balances on the front-end, so that we can see the changes as the liquidation bot is performing the swaps. We have two different displays to consider: The **mock wallet** which is not connected to Solana, to be used for testing purposes. Also the **live wallet** - pulling data from an existing, funded account on Solana that can be used on either devnet or mainnet.
 
 _Remember the safety information about the risks of using real SOL from the introduction_!
 
 # 🎠 Playground time
 
-There's a comprehensive explanation of the code we are using in the `Wallet.tsx` component below. For now, just play around with the actual component on the right side of the screen. It's a good opportunity to familiarize yourself with the display. There are default balance values, and you can switch between the **mock wallet** and the **live wallet**. We assume that **you _will not_ want to use an account containing real SOL on mainnet** with an incomplete project - there are no safeguards in this code. Don't be alarmed, we just want to be crystal clear on that point! It's quite easy to tell the difference between the mock and live wallet displays. Only the mock wallet can be reset. _This is only truly relevant for testing_ - there is no way to reset balances of an on-chain account (immutable public ledgers and all 😉).
+There's a comprehensive explanation of the code we are using in the `Wallet.tsx` component below. For now, just play around with the actual component on the right side of the screen. It's a good opportunity to familiarize yourself with the display. There are default balance values, and you can switch between the **mock wallet** and the **live wallet**.
+
+We assume that **you _will not_ want to use an account containing real SOL on mainnet** with this project as-is - there are no safeguards in this code. Don't be alarmed, we just want to be very clear on that point! It's quite easy to tell the difference between the mock and live wallet displays. Only the mock wallet can be reset. _This is only truly relevant for testing_ - there is no way to reset balances of an on-chain account (immutable public ledgers and all 😉).
 
 Once you click the toggle over to the **live wallet**, you'll notice some changes:
 
-- The live wallet has a textinput for your private key.
-- The shortened version of either your public key or a randomly generated pubkey is displayed - mouse-over it for a tooltip showing the entire public key.
+- The shortened version of a randomly generated pubkey is displayed, mouse-over it for a tooltip showing the entire public key.
 - A textinput is included for you to enter a private key which will then display the associated public key & any SOL or USDC tokens of that keypair.
 - The balance of ORCA tokens is also displayed, which is only relevant to swaps on devnet.
 
@@ -17,9 +18,46 @@ We default to using devnet, and you should also notice that the balance values c
 
 # 🔐 Getting your private key
 
-Private keys are part of your keypair, such as the one created by the Solana CLI and stored in JSON format as a UInt8Array, or the one you created in Phantom. The [base58 encoded](https://medium.com/nakamo-to/what-is-base58-c6c2db7808f3) string of the private key is the preferred form for copy/paste operations as it's . We'll go over how to perform the encoding and decoding a little further ahead. For now, just be aware that the private key can be represented in either form.
+{% hint style="tip" %}
+Private keys are part of your keypair, such as the one you'll create in Phantom in just a moment. The [base58 encoded](https://medium.com/nakamo-to/what-is-base58-c6c2db7808f3) secret key is commonly called the "private key". This alphanumeric string of the private key is the preferred form for displaying to users. Don't get confused by the difference between "secret key" and "private key" - there really isn't one, they are just different representations of the same information.
+{% endhint %}
 
-When you're ready to test the **live wallet** on _devnet_ with a funded account, here are the steps to follow in the Phantom wallet to get your base58 encoded private key:
+Using the method `fromSecretKey` which exists on the `Keypair` class from `@solana/web3.js`, it is possible to convert a `UInt8Array` secret key into a Keypair object with `publicKey` and `secretKey` properties. We'd still need to base58 encode the `secretKey` property to arrive at what is commonly called the "private key". A private key allows the holder to sign messages and transactions belonging to the public key. When you get a "private key" from the Phantom wallet, this is what is happening under the hood:
+
+```typescript
+// Modified example from components/protocols/pyth/lib/swap.ts
+
+import {Keypair} from '@solana/web3.js';
+import {bs58} from 'bs58';
+
+const _account = Keypair.fromSecretKey(
+  new Uint8Array([
+    175, 193, 241, 226, 223, 32, 155, 13, 1, 120, 157, 36, 15, 39, 141, 146,
+    197, 180, 138, 112, 167, 209, 70, 94, 103, 202, 166, 62, 81, 18, 143, 49,
+    125, 253, 127, 53, 71, 38, 254, 214, 30, 170, 71, 69, 80, 46, 52, 76, 101,
+    246, 34, 16, 96, 4, 164, 39, 220, 88, 184, 201, 138, 180, 181, 238,
+  ]),
+); // This is given for testing purposes only. Do NOT use this keypair in any production code.
+
+// Logging the Keypair object, you'll notice that the publicKey is a 32-byte UInt8Array & the secretKey is the entire 64-byte UInt8Array
+// The first 32 bytes of the array are the secret key and the last 32 bytes of the array are the public key
+console.log(_account);
+
+// This returns the entire UInt8Array of 64 bytes
+console.log(_account.secretKey);
+
+// The secret key in base58 encoding: 4WoxErVFHZSaiTyDjUhqd6oWRL7gHZJd8ozvWWKZY9EZEtrqxCiD8CFvak7QRCYpuZHLU8FTGALB9y5yenx8rEq3
+console.log(bs58.encode(_account.secretKey));
+
+// The publicKey property is either a UInt8Array or a BigNumber:
+// PublicKey { _bn: <BN: 7dfd7f354726fed61eaa4745502e344c65f622106004a427dc58b8c98ab4b5ee> }
+console.log(_account.publicKey);
+
+// The public key is commonly represented as a string when being used as an "address": 9UpA4MYkBw5MGfDm5oCB6hskMt6LdUZ8fUtapG6NioLH
+console.log(_account.publicKey.toString());
+```
+
+When you're ready to test the **live wallet** on _devnet_, here are the steps to follow in the Phantom wallet to get your private key:
 
 ![Phantom Private Key Workflow](phantom_secret_key.png)
 
@@ -37,15 +75,13 @@ You can switch Phantom to devnet by clicking the gear icon to open the settings,
 
 ![Phantom Settings](phantom_cluster.png)
 
-If you're absolutely not comfortable with using the private key of an individual wallet that you control, we have also pre-funded a keypair on devnet with SOL and USDC for quick testing. Its public key is `9UpA4MYkBw5MGfDm5oCB6hskMt6LdUZ8fUtapG6NioLH` and it has the private key `4WoxErVFHZSaiTyDjUhqd6oWRL7gHZJd8ozvWWKZY9EZEtrqxCiD8CFvak7QRCYpuZHLU8FTGALB9y5yenx8rEq3`. Because this keypair is public, we cannot vouch for the balances remaining above 0, but we would ask that anybody using it does not simply drain it 🕵️.
-
 # 🪂 Airdrop yourself some SOL
 
-It's important to get some SOL on devnet to ensure that the balance is being displayed correctly, and also because we'll need to swap some SOL for USDC to be able to initiate the liquidation bot. There are several methods of airdropping SOL into a devnet account, and if you've completed the [Build a Solana Wallet course](https://learn.figment.io/pathways/solana-wallet) and the Solana 101 Pathway you should be familiar with this process.
+It's important to get some SOL on devnet to ensure that the balance is being displayed correctly, also because we'll need to swap some SOL for USDC to be able to start up the liquidation bot. There are several methods of airdropping SOL into a devnet account, and if you've completed the [Build a Solana Wallet](https://learn.figment.io/pathways/solana-wallet) course and the Solana 101 Pathway you should be familiar with this process.
 
 Here's a quick method using a faucet website:
 
-- Go to <https://solfaucet.com/> and paste the public key you just created in Phantom into the textinput
+- Go to <https://solfaucet.com/> and paste the public key you just created in Phantom into the textinput in the middle of the page
 - You can request a maximum of 2 SOL per attempt, higher amounts will not work. This is due to limits on the airdrop function on devnet. Click on the blue "DEVNET" button to complete the airdrop.
 
 You can confirm the balance change in Phantom as well as on the Wallet component in the Pathway. We'll cover how to swap some SOL for USDC when it becomes relevant further ahead in the pathway. For now, we've got some building to do 👉
@@ -54,7 +90,7 @@ You can confirm the balance change in Phantom as well as on the Wallet component
 
 This component is necessary because we want to display the amount of SOL tokens & the amount of SPL tokens in our wallet (the USDC stablecoin is the SPL token we're referring to here). We'll also want to display the total value ("worth") of the combined amounts, based on the current market price. The final piece of the puzzle will be the percentage of change in the total worth of our wallet which will be used to indicate how our liquidation bot is performing. A positive percentage indicates a profit overall, and a negative percentage indicates a loss.
 
-There are two files to be aware of, one is the React component [`components/protocols/pyth/components/Wallet.tsx`](https://github.com/figment-networks/learn-web3-dapp/main/components/protocols/pyth/components/Wallet.tsx) and the other is a collection of helper code [`components/protocols/pyth/lib/wallet.tsx`](https://github.com/figment-networks/learn-web3-dapp/main/components/protocols/pyth/lib/wallet.tsx). The React component is responsible for displaying the wallet data, and uses the helper code to fetch and format the data. Let's go ahead and break down the helper code for easier understanding!
+There are two files to be aware of, one is the React component [`components/protocols/pyth/components/Wallet.tsx`](https://github.com/figment-networks/learn-web3-dapp/main/components/protocols/pyth/components/Wallet.tsx) which is what is being displayed on the right side of this page. The other is a collection of helper code [`components/protocols/pyth/lib/wallet.tsx`](https://github.com/figment-networks/learn-web3-dapp/main/components/protocols/pyth/lib/wallet.tsx). The React component is responsible for displaying the account data, and uses the helper code to fetch and format the data. Let's go ahead and break down the helper code for easier understanding!
 
 # 🚚 Importing dependencies
 
@@ -86,7 +122,7 @@ Next up, we need to define some important interfaces and constants:
 - An `Order` contains the necessary information to carry out a swap: If it is a buy or sell, the size of the swap, and the relevant tokens.
   - We also need to specify the mint addresses of the tokens we want to swap.
   - The reason we need the Orca token's address is because swap routing on devnet uses the Orca token as an intermediate exchange: SOL -> ORCA -> USDC.
-- We're specifying the decimals, to ease our on the fly calculations 😅. Notice that we're `export`ing these so that they can be accessed by our Wallet component.
+- We're specifying the decimals, to ease our on the fly calculations 😅. Notice that we're `export`ing these so that they can be accessed by our other components. They'll pop up again further ahead in the Pathway, when we're displaying the order book.
 
 ```typescript
 // components/protocols/pyth/lib/wallet.tsx
@@ -454,224 +490,12 @@ return {
 };
 ```
 
-- Calculate the dollar value of the SOL in our wallet by multiplying the balance by the current price reported by Pyth (remember, this is only an estimate and is subject to change as the market fluctuates)
-- Add the SOL value to the total value of USDC stablecoins in our wallet
-- Wire up the ability to sign and send transactions
-
-```typescript
-// solution
-// components/protocols/pyth/components/Wallet.tsx
-
-import {
-  Col,
-  Space,
-  Switch,
-  message,
-  Statistic,
-  Card,
-  Button,
-  InputNumber,
-  Table,
-  Row,
-  Input,
-  Tag,
-  notification,
-  Tooltip,
-} from 'antd';
-import {useGlobalState} from 'context';
-import {SyncOutlined} from '@ant-design/icons';
-import React, {useEffect, useState} from 'react';
-import {Cluster, clusterApiUrl, Connection} from '@solana/web3.js';
-import {PythConnection, getPythProgramKeyForCluster} from '@pythnetwork/client';
-import {DollarCircleFilled} from '@ant-design/icons';
-import {EventEmitter} from 'events';
-import {PYTH_NETWORKS, SOLANA_NETWORKS} from 'types/index';
-import {
-  ORCA_DECIMAL,
-  SOL_DECIMAL,
-  USDC_DECIMAL,
-  useExtendedWallet,
-} from '@figment-pyth/lib/wallet';
-import _ from 'lodash';
-import * as Rx from 'rxjs';
-
-const connection = new Connection(clusterApiUrl(PYTH_NETWORKS.DEVNET));
-const pythPublicKey = getPythProgramKeyForCluster(PYTH_NETWORKS.DEVNET);
-const pythConnection = new PythConnection(connection, pythPublicKey);
-
-const signalListener = new EventEmitter();
-
-const Wallet = () => {
-  const {state, dispatch} = useGlobalState();
-  const [cluster, setCluster] = useState<Cluster>('devnet');
-
-  const [useLive, setUseLive] = useState(false);
-  const [price, setPrice] = useState<number | undefined>(undefined);
-  const {setSecretKey, keyPair, balance, addOrder, orderBook, resetWallet} =
-    useExtendedWallet(useLive, cluster, price);
-
-  const [yieldExpectation, setYield] = useState<number>(0.001); // amount of ema to buy/sell signal
-  const [orderSizeUSDC, setOrderSizeUSDC] = useState<number>(20); // USDC
-  const [orderSizeSOL, setOrderSizeSOL] = useState<number>(0.14); // SOL
-  const [symbol, setSymbol] = useState<string | undefined>(undefined);
-
-  // Shorten the public key for display purposes
-  const displayAddress = `${keyPair.publicKey
-    .toString()
-    .slice(0, 6)}...${keyPair.publicKey.toString().slice(38, 44)}`;
-
-  // State for tracking user worth with current Market Price.
-  const [worth, setWorth] = useState({initial: 0, current: 0});
-
-  useEffect(() => {
-    if (cluster === SOLANA_NETWORKS.MAINNET) {
-      notification.warn({
-        message: '⚠️ WARNING! ⚠️',
-        description:
-          'Swaps on mainnet-beta use real funds. Use extreme caution!',
-      });
-    } else if (cluster === SOLANA_NETWORKS.DEVNET) {
-      notification.info({
-        message: 'On devnet ✅',
-        description: 'Swaps on devnet have no actual value!',
-      });
-    }
-  }, [cluster]);
-
-  useEffect(() => {
-    if (price) {
-      dispatch({
-        type: 'SetIsCompleted',
-      });
-      // Set ordersize Amount in Sol respect to USDC.
-      setOrderSizeSOL(orderSizeUSDC / price!);
-    }
-
-    // update the current worth each price update.
-    const currentWorth = balance?.sol_balance * price! + balance.usdc_balance;
-    setWorth({...worth, current: currentWorth});
-  }, [price, orderSizeUSDC, setPrice]);
-
-  return (
-    <Col>
-      <Space direction="vertical" size="large">
-        <Space direction="horizontal" size="large">
-          <Card
-            style={{width: 550}}
-            title={
-              !useLive ? (
-                'Mock Wallet'
-              ) : (
-                <Tooltip
-                  title={keyPair.publicKey.toString()}
-                  color={'purple'}
-                  arrowPointAtCenter
-                >
-                  {displayAddress}
-                </Tooltip>
-              )
-            }
-            extra={
-              <>
-                <Switch
-                  checked={useLive}
-                  onChange={(val) => setUseLive(val)}
-                  checkedChildren={'Live'}
-                  unCheckedChildren={'Mock'}
-                />{' '}
-                {useLive ? (
-                  <Switch
-                    checked={cluster === 'mainnet-beta'}
-                    onChange={(val) =>
-                      setCluster(val ? 'mainnet-beta' : 'devnet')
-                    }
-                    checkedChildren={'Mainnet'}
-                    unCheckedChildren={'Devnet'}
-                  />
-                ) : (
-                  <>
-                    <Button onClick={() => resetWallet()} disabled={useLive}>
-                      Reset Wallet
-                    </Button>
-                  </>
-                )}
-              </>
-            }
-          >
-            <Row>
-              <Col span={12}>
-                <Statistic
-                  value={balance?.sol_balance / SOL_DECIMAL}
-                  title={'SOL'}
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic
-                  value={balance?.usdc_balance / USDC_DECIMAL}
-                  title={'USDC'}
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic
-                  value={balance?.orca_balance / ORCA_DECIMAL}
-                  title={'ORCA'}
-                />
-              </Col>
-
-              <Col span={12}>
-                <Statistic
-                  value={
-                    (balance?.sol_balance / SOL_DECIMAL) * price! +
-                    balance.usdc_balance / USDC_DECIMAL
-                  }
-                  title={'TOTAL WORTH'}
-                />
-              </Col>
-
-              <Col span={12}>
-                <Statistic
-                  value={(worth.initial / worth.current) * 100 - 100}
-                  prefix={'%'}
-                  title={'Change'}
-                />
-              </Col>
-            </Row>
-            <Row>
-              {useLive ? (
-                <>
-                  <Row>
-                    <label htmlFor="secretKey">Public Key:&nbsp;</label>
-                    {keyPair?.publicKey && displayAddress}
-                  </Row>
-                  <Row>
-                    <label htmlFor="secretKey">Wallet Key:&nbsp;</label>
-                    <Input
-                      id="secretKey"
-                      type="password"
-                      onChange={(e) => setSecretKey(e.target.value)}
-                      placeholder="Paste a Solana private key into this textbox"
-                      style={{width: 320}}
-                    />
-                  </Row>
-                </>
-              ) : null}
-            </Row>
-          </Card>
-        </Space>
-      </Space>
-    </Col>
-  );
-};
-
-export default Wallet;
-```
-
 ---
 
 # 🏋️ Challenge
 
 {% hint style="tip" %}
-In `components/protocols/pyth/lib/wallet.tsx`, implement a `useEffect` to set the keypair in the app state based on the user input of the `secretKey` (this is what is pasted into the textinput on the **live wallet**). You must replace the instances of `undefined` with working code to accomplish this.
+In `components/protocols/pyth/lib/wallet.tsx`, finish implementing the `useEffect` to set the keypair in the app state based on the user input of the `secretKey`. The `secretKey` is what is pasted into the textinput of the **live wallet**. You must replace the instances of `undefined` with working code to accomplish this.
 {% endhint %}
 
 **Take a few minutes to figure this out**
@@ -721,16 +545,14 @@ useEffect(() => {
 
 **What happened in the code above?**
 
--
-
----
+- ***
 
 # ✅ Make sure it works
 
-?
+Once you've completed the code in `components/protocols/pyth/lib/wallet.tsx` and saved the file, the Next.js development server will reload the page. Provided that you've correctly set the keypair into the app state, you will be able to proceed to the next step 🚀
 
 ---
 
 # 🏁 Conclusion
 
-?
+We learned how to create a display for our account balances, with a little bit of extended functionality so that we can use it with both devnet and mainnet. We also took a look at the specifics of Solana private keys, and how to use Phantom to create a new account for testing. We then funded that account using a faucet website to get some devnet SOL.
