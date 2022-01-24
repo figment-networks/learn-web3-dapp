@@ -14,7 +14,7 @@ interface WalletBalance {
   orca_balance: number;
 }
 
-interface Order {
+export interface Order {
   side: 'buy' | 'sell';
   size: number;
   fromToken: string;
@@ -101,19 +101,20 @@ export const useExtendedWallet = (
     null,
   );
 
-  useEffect(() => {
-    (async function _init(): Promise<void> {
-      console.log('Keypair changed to: ', keyPair?.publicKey.toBase58());
-      console.log('setting up clients');
-      setJupiterSwapClient(null);
-      setOrcaSwapClient(null);
-      await getOrcaSwapClient();
-      await getJupiterSwapClient();
-      console.log('clients initialized');
-    })();
-  }, [keyPair]);
+  // useEffect(() => {
+  //   (async function _init(): Promise<void> {
+  //     console.log('Keypair changed to: ', keyPair?.publicKey.toBase58());
+  //     console.log('setting up clients');
+  //     setJupiterSwapClient(null);
+  //     setOrcaSwapClient(null);
+  //     await getOrcaSwapClient();
+  //     await getJupiterSwapClient();
+  //     console.log('clients initialized');
+  //   })();
+  // }, [keyPair]);
 
   const getOrcaSwapClient = async () => {
+    console.log('setting up orca client');
     if (orcaSwapClient) return orcaSwapClient;
     const _orcaSwapClient = new OrcaSwapClient(
       keyPair,
@@ -124,15 +125,16 @@ export const useExtendedWallet = (
   };
 
   const getJupiterSwapClient = async () => {
+    console.log('setting up jupiter client');
     if (jupiterSwapClient) return jupiterSwapClient;
     const _jupiterSwapClient = await JupiterSwapClient.initialize(
       // Why not use clusterApiUrl('mainnet') over projectserum? Because mainnet public endpoints have rate limits at the moment.
       // solana--mainnet--rpc.datahub.figment.io/apikey/7087b9e27d60870a58c8c9114935017d
-      // new Connection('https://solana-api.projectserum.com/', 'confirmed'),
-      new Connection(
-        'https://solana--mainnet--rpc.datahub.figment.io/apikey/7087b9e27d60870a58c8c9114935017d/',
-        'confirmed',
-      ),
+      new Connection('https://solana-api.projectserum.com/', 'confirmed'),
+      // new Connection(
+      //   'https://solana--mainnet--rpc.datahub.figment.io/apikey/7087b9e27d60870a58c8c9114935017d/',
+      //   'confirmed',
+      // ),
 
       SOLANA_NETWORKS.MAINNET,
       keyPair,

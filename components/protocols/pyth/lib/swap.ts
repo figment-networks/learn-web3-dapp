@@ -59,6 +59,10 @@ export class JupiterSwapClient {
     const tokens: Token[] = await (await fetch(TOKEN_LIST_URL[cluster])).json(); // Fetch token list from Jupiter API
     const inputToken = tokens.find((t) => t.address == tokenAMintAddress); // Buy token
     const outputToken = tokens.find((t) => t.address == tokenBMintAddress); // Sell token
+    console.log('Input token:', inputToken);
+    console.log('Output token:', outputToken);
+    console.log('Keypair:', keypair);
+    console.log(connection, cluster);
     if (!inputToken || !outputToken) {
       throw new Error('Token not found');
     }
@@ -145,6 +149,7 @@ export class JupiterSwapClient {
 
     if (swapResult.error) {
       console.log(swapResult.error);
+      return {...swapResult, txIds: [swapResult.txId]}; // fit the swapResult interface
     } else {
       console.log(`https://explorer.solana.com/tx/${swapResult.txid}`);
       console.log(
@@ -154,7 +159,7 @@ export class JupiterSwapClient {
         `inputAmount=${swapResult.inputAmount} outputAmount=${swapResult.outputAmount}`,
       );
     }
-    return swapResult;
+    return {...swapResult, txIds: [swapResult.txid]}; // fit the swapResult interface
   }
 }
 
@@ -172,17 +177,35 @@ export class OrcaSwapClient {
    */
   async buy(size: number): Promise<SwapResult> {
     const orca = getOrca(this.connection, Network.DEVNET);
-    const orcaSolPool = orca.getPool(OrcaPoolConfig.ORCA_SOL); // Orca pool for SOL
-    const solToken = orcaSolPool.getTokenB(); // SOL token
-    const solAmount = new Decimal(size);
-    const quote = await orcaSolPool.getQuote(solToken, solAmount);
-    const orcaAmount = quote.getMinOutputAmount();
+    const orcaUSDCPool = orca.getPool(OrcaPoolConfig.ORCA_USDC);
+    const usdcToken = orcaUSDCPool.getTokenB();
+    console.log('usdcToken', usdcToken);
+    const usdcAmount = new Decimal(size);
+    const usdcQuote = await orcaUSDCPool.getQuote(usdcToken, usdcAmount);
+    const orcaAmount = usdcQuote.getMinOutputAmount();
+    const swapOrcaPayload = await orcaUSDCPool.swap(
+      this.keypair,
+      usdcToken,
+      usdcAmount,
+      orcaAmount,
+    );
     console.log(
-      `Swap ${solAmount.toString()} SOL for at least ${orcaAmount.toNumber()} ORCA`,
+      `Swap ${usdcAmount.toString()} USDC for at least ${orcaAmount.toNumber()} ORCA`,
+    );
+    const swapOrcaTxId = await swapOrcaPayload.execute();
+    console.log('Swapped:', swapOrcaTxId, '\n');
+
+    const orcaSolPool = orca.getPool(OrcaPoolConfig.ORCA_SOL); // Orca pool for SOL
+    const orcaToken = orcaSolPool.getTokenA(); // SOL token
+    // const solAmount = new Decimal(size);
+    const quote = await orcaSolPool.getQuote(orcaToken, orcaAmount);
+    const solAmount = quote.getMinOutputAmount();
+    console.log(
+      `Swap ${orcaAmount.toNumber()} ORCA for at least ${solAmount.toString()} SOL `,
     );
     const swapPayload = await orcaSolPool.swap(
       this.keypair,
-      solToken,
+      orcaToken,
       solAmount,
       // orcaAmount is here because in the Orca smart contract there's a condition if the swap produces
       // less than the amount I requested, the transaction will fail and I will keep my SOL.
@@ -192,23 +215,6 @@ export class OrcaSwapClient {
     const swapTxId = await swapPayload.execute();
     console.log('Swapped:', swapTxId, '\n');
 
-    const orcaUSDCPool = orca.getPool(OrcaPoolConfig.ORCA_USDC);
-    const orcaToken = orcaUSDCPool.getTokenA();
-    console.log('orcaToken', orcaToken);
-    const usdcQuote = await orcaUSDCPool.getQuote(orcaToken, orcaAmount);
-    const usdcAmount = usdcQuote.getMinOutputAmount();
-    const swapOrcaPayload = await orcaUSDCPool.swap(
-      this.keypair,
-      orcaToken,
-      orcaAmount,
-      usdcAmount,
-    );
-    console.log(
-      `Swap ${orcaAmount.toString()} ORCA for at least ${usdcAmount.toNumber()} USDC`,
-    );
-
-    const swapOrcaTxId = await swapOrcaPayload.execute();
-    console.log('Swapped:', swapOrcaTxId, '\n');
     return {
       txIds: [swapTxId, swapOrcaTxId],
       inAmount: solAmount.toNumber(),
@@ -224,14 +230,20 @@ export class OrcaSwapClient {
    */
   async sell(size: number): Promise<SwapResult> {
     const orca = getOrca(this.connection, Network.DEVNET);
-    const orcaSolPool = orca.getPool(OrcaPoolConfig.ORCA_SOL);
-    const solToken = orcaSolPool.getTokenB();
+    const orcaSolPool = orca.getPool(OrcaPoolConfig.SOL_USDC);
+    const solToken = orcaSolPool.getTokenA();
     const solAmount = new Decimal(size);
     const quote = await orcaSolPool.getQuote(solToken, solAmount);
     const orcaAmount = quote.getMinOutputAmount();
     console.log(
       `Swap ${solAmount.toString()} SOL for at least ${orcaAmount.toNumber()} ORCA`,
     );
+    console.log({
+      keypair: this.keypair,
+      solToken,
+      solAmount,
+      orcaAmount,
+    });
     const swapPayload = await orcaSolPool.swap(
       this.keypair,
       solToken,
