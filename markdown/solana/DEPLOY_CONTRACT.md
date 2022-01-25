@@ -192,7 +192,7 @@ yarn run solana:build:program
 ```
 
 {% hint style="tip" %}
-If you have cloned the reo locally and you are using WSL or Linux, you might get an **error: linker `cc` not found** when compiling the Solana program. You will need to install the **build-essential** package by running `sudo apt install build-essential`, or the install command for your specific Linux distribution.
+If you have cloned the repo locally and you are using WSL or Linux, you might get an **error: linker `cc` not found** when compiling the Solana program. You will need to install the **build-essential** package by running `sudo apt install build-essential`, or the install command for your specific Linux distribution.
 {% endhint %}
 
 When it's successful, you will see the instructions to execute the deploy command with the path to the compiled program named `helloworld.so`. While this would work, we want to specify the keypair we generated just for this purpose, so read on.
