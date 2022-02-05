@@ -3,7 +3,7 @@
     "@truffle/hdwallet-provider": "^1.4.1",
     "bufferutil": "^4.0.3",
     "ethers": "^5.4.1",
-    "truffle": "^5.4.0",
+    "truffle": "^5.4.32",
     "utf-8-validate": "^5.0.5",
     "web3": "^1.4.0"
   }
