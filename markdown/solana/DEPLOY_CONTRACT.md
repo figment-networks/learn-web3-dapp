@@ -285,7 +285,7 @@ You can now deploy the program to the test validator with the command:
 solana deploy -v --keypair solana-wallet/keypair.json dist/solana/program/helloworld.so
 ```
 
-The last thing to change is the selected cluster in the Pathway UI. Go back to the "Connect to Solana" step using the navigation buttons at the bottom of the screen, there you can pick the **localnet** option from the Network dropdown on the top of the page. You can now proceed with the code challenge and the Pathway will check the test validator for the deployed program instead of devnet, circumventing the issue with Gitpod! 😅
+The last thing to change is the selected cluster in the Pathway UI. Go back to the "Connect to Solana" step using the navigation buttons at the bottom of the screen, there you can pick the **localnet** option from the Network dropdown on the top of the page. Don't forget to repeat the airdrop step, to make sure that the keypair is funded with SOL. You can now proceed with the code challenge and the Pathway will check the test validator for the deployed program instead of devnet, circumventing the issue with Gitpod! 😅
 
 ---
 
