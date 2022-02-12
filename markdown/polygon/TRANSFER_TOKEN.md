@@ -5,7 +5,7 @@ Transferring some token is one of the major feature of Web 3. In this challenge,
 # 🏋️ Challenge
 
 {% hint style="tip" %}
-**Imagine this scenario:** You know you have a big balance and you want to eat some pizza. Then, you need to transfer **0.1** MATIC to buy one! In `components/protocols/polygon/challenges/Transfer.tsx`, implement the `transfer` function.
+**Imagine this scenario:** You know you have a big balance and you want to eat some pizza. Then, you need to transfer **0.1** MATIC to buy one! In `components/protocols/polygon/challenges/transfer.ts`, implement the `transfer` function.
 {% endhint %}
 
 **Take a few minutes to figure this out.**
@@ -82,7 +82,7 @@ Still not sure how to do this? No problem! The solution is below so you don't ge
 
 # ✅ Make sure it works
 
-Once the code in `components/protocols/polygon/challenges/Transfer.tsx` is complete, enter an amount to transfer and click **Transfer** to send tokens to another Polygon account.
+Once the code in `components/protocols/polygon/challenges/transfer.ts` is complete, enter an amount to transfer and click **Transfer** to send tokens to another Polygon account.
 
 ---
 
