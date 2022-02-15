@@ -234,10 +234,6 @@ Program Id: 7KwpCaaYXRsjfCTvf85eCVuZDW894zZNN38UMxMpQoaQ
 
 ## ⛓ Deploying the program to a test validator inside Gitpod
 
-{% hint style="info" %}
-Gitpod currently has an issue which prevents deployments to devnet. To work around this, you will need to run a test validator inside of Gitpod, and deploy your program there instead of devnet. Follow the steps below to complete this step using this alternative method. **Users who have cloned the repository locally are unaffected by this issue**.
-{% endhint %}
-
 First, you will need to change the Solana CLI target cluster with the terminal command:
 
 ```text
