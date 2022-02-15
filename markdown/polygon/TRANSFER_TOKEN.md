@@ -82,7 +82,7 @@ Still not sure how to do this? No problem! The solution is below so you don't ge
 
 # ✅ Make sure it works
 
-Once the code in `components/protocols/polygon/challenges/Transfer.tsx` is complete, enter an amount to transfer and click **Transfer** to send tokens to another Polygon account.
+Once the code in `components/protocols/polygon/challenges/transfer.ts` is complete, enter an amount to transfer and click **Transfer** to send tokens to another Polygon account.
 
 ---
 
