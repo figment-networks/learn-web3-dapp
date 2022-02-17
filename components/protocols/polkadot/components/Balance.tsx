@@ -4,6 +4,8 @@ import axios from 'axios';
 import {useGlobalState} from 'context';
 import {getInnerState} from 'utils/context';
 
+import {FAUCET_URL} from '@figment-polkadot/lib';
+
 const {Text} = Typography;
 
 const DECIMAL_OFFSET = 10 ** 12;
@@ -18,7 +20,7 @@ const Balance = () => {
   const [balance, setBalance] = useState<number | null>(null);
 
   useEffect(() => {
-    if (balance) {
+    if (balance !== null && balance > 0) {
       dispatch({
         type: 'SetIsCompleted',
       });
@@ -50,16 +52,34 @@ const Balance = () => {
         <Button type="primary" onClick={getBalance} loading={fetching}>
           Check Balance
         </Button>
-        {balance ? (
-          <Alert
-            message={
-              <Text
-                strong
-              >{`This address has a balance of ${balance} ${TOKEN_SYMBOL}`}</Text>
-            }
-            type="success"
-            showIcon
-          />
+        {balance !== null ? (
+          <>
+            <Alert
+              message={
+                <Text
+                  strong
+                >{`This address has a balance of ${balance} ${TOKEN_SYMBOL}`}</Text>
+              }
+              type="success"
+              showIcon
+            />
+            {balance === 0 ? (
+              <Alert
+                message={
+                  <Space>
+                    <Text strong>Fund your account</Text>
+                  </Space>
+                }
+                description={
+                  <a href={FAUCET_URL} target="_blank" rel="noreferrer">
+                    Go to the faucet
+                  </a>
+                }
+                type="warning"
+                showIcon
+              />
+            ) : null}
+          </>
         ) : error ? (
           <Alert message={error} type="error" showIcon />
         ) : (

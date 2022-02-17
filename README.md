@@ -16,6 +16,7 @@ We will guide you through using the various blockchain JavaScript SDKs to intera
 - ✅ Celo
 - ✅ Ceramic
 - ✅ The Graph
+- ✅ The Graph for NEAR
 - 🔜 Arweave
 - 🔜 Chainlink
 - 🔜 Pyth
@@ -31,7 +32,7 @@ We will guide you through using the various blockchain JavaScript SDKs to intera
 
 ## 🤖 Using Gitpod (Recommended)
 
-The best way to go through those courses it using [Gitpod](https://gitpod.io). Gitpod provides prebuilt developer environments in your browser, powered by VS Code. Just sign in using GitHub and you'll be up and running in seconds without having to do any manual setup 🔥
+The best way to go through those courses is using [Gitpod](https://gitpod.io). Gitpod provides prebuilt developer environments in your browser, powered by VS Code. Just sign in using GitHub and you'll be up and running in seconds without having to do any manual setup 🔥
 
 [**Open this repo on Gitpod**](https://gitpod.io/#https://github.com/figment-networks/learn-web3-dapp)
 

@@ -26,6 +26,10 @@ In a code editor, a subgraph will be a folder with a few different folders and f
 yarn global add @graphprotocol/graph-cli
 ```
 
+{% hint style="tip" %}
+If you're using Gitpod, Yarn won't automatically add the CLI binary to your PATH - use `npm install -g @graphprotocol/graph-cli` instead!
+{% endhint %}
+
 Verify the installation was successful by running `graph` in your Terminal. You should see:
 
 ```text

@@ -1,23 +1,22 @@
-import {GlobalContext, globalStateReducer, initialGlobalState} from 'context';
+import React, {useEffect, useReducer, ReactElement} from 'react';
+import styled from 'styled-components';
+import {Row, Col} from 'antd';
+
+import {GlobalContext, globalStateReducer, initGlobalState} from 'context';
 import {ChainType, MarkdownForChainIdT, LocalStorageStateT} from 'types';
 import {FOOTER_HEIGHT, GRID_LAYOUT, HEADER_HEIGHT} from 'lib/constants';
-import React, {useEffect, useReducer} from 'react';
-import styled from 'styled-components';
-import {useLocalStorage} from 'hooks';
-import Sidebar from './Sidebar';
-import {Row, Col} from 'antd';
-import Footer from './Footer';
-import Nav from './Nav';
 import {
-  prepareGlobalState,
-  prepareGlobalStateForStorage,
   isOneColumnStep,
   getChainId,
+  prepareGlobalState,
+  prepareGlobalStateForStorage,
 } from 'utils/context';
-import {Spinner} from './Spinner';
-import {colors} from 'utils/colors';
-import Head from 'components/shared/Layout/Head';
-import {ReactElement} from 'react';
+import {useLocalStorage} from 'hooks';
+
+import Sidebar from './Sidebar';
+import Footer from './Footer';
+import Head from './Head';
+import Nav from './Nav';
 
 type LayoutPropT = {
   children: ReactElement;
@@ -28,31 +27,23 @@ type LayoutPropT = {
 const Layout = ({children, chain, markdown}: LayoutPropT) => {
   const [storageState, setStorageState] =
     useLocalStorage<LocalStorageStateT>('figment');
-  const newGlobalState = prepareGlobalState(storageState, initialGlobalState);
-
+  const newGlobalState = prepareGlobalState(
+    storageState,
+    initGlobalState,
+    chain.id,
+  );
   const [state, dispatch] = useReducer(globalStateReducer, newGlobalState);
-
-  useEffect(() => {
-    dispatch({
-      type: 'SetCurrentChainId',
-      currentChainId: chain.id,
-    });
-  }, []);
 
   useEffect(() => {
     setStorageState(prepareGlobalStateForStorage(state));
   }, [state, dispatch]);
-
-  if (!state.currentChainId) {
-    return <Spinner color={colors.figmentYellow} />;
-  }
 
   const isStepOneColumn = isOneColumnStep(state);
   const currentStepId = getChainId(state);
 
   return (
     <GlobalContext.Provider value={{state, dispatch}}>
-      <Head label={chain.label} />
+      <Head />
       <Col>
         <Nav />
         <BelowNav>

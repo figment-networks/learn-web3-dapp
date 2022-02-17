@@ -14,6 +14,7 @@ export enum CHAINS {
   SOLANA = 'solana',
   TEZOS = 'tezos',
   THE_GRAPH = 'the_graph',
+  THE_GRAPH_NEAR = 'the_graph_near',
 }
 
 // Protocols Enum -----------------------
@@ -29,7 +30,13 @@ export type PROTOCOLS =
   | SECRET_PROTOCOLS
   | SOLANA_PROTOCOLS
   | TEZOS_PROTOCOLS
-  | THE_GRAPH_PROTOCOLS;
+  | THE_GRAPH_PROTOCOLS
+  | THE_GRAPH_NEAR_PROTOCOLS
+  | ARWEAVE_PROTOCOLS;
+
+export enum THE_GRAPH_NEAR_PROTOCOLS {
+  GRAPHQL = 'GRAPHQL',
+}
 
 export enum THE_GRAPH_PROTOCOLS {
   GRAPHQL = 'GRAPHQL',
@@ -154,6 +161,10 @@ export enum THE_GRAPH_NETWORKS {
   STUDIO = 'studio',
 }
 
+export enum THE_GRAPH_NEAR_NETWORKS {
+  HOSTED = 'hosted',
+}
+
 export enum ARWEAVE_NETWORKS {
   MAINNET = 'mainnet',
   TESTNET = 'TESTNET',
@@ -165,6 +176,9 @@ export type NETWORKS =
   | ARWEAVE_NETWORKS
   | AVALANCHE_NETWORKS
   | CELO_NETWORKS
+  | TEZOS_NETWORKS
+  | THE_GRAPH_NETWORKS
+  | THE_GRAPH_NEAR_NETWORKS
   | CERAMIC_NETWORKS
   | NEAR_NETWORKS
   | POLKADOT_NETWORKS
@@ -271,6 +285,11 @@ export type LocalStorageStateT = {
 
 export type LocalStorageProtocolStateT = {
   currentStepId: PROTOCOL_STEPS_ID;
+  steps: {
+    [Key in PROTOCOL_STEPS_ID]: {
+      isCompleted: boolean;
+    };
+  };
   innerState?: InnerStateT;
 };
 
@@ -317,6 +336,7 @@ export enum PROTOCOL_STEPS_ID {
   BASIC_PROFILE = 'BASIC_PROFILE',
   CUSTOM_DEFINITION = 'CUSTOM_DEFINITION',
   GRAPH_NODE = 'GRAPH_NODE',
+  HOSTED_SERVICE = 'HOSTED_SERVICE',
   SUBGRAPH_SCAFFOLD = 'SUBGRAPH_SCAFFOLD',
   SUBGRAPH_MANIFEST = 'SUBGRAPH_MANIFEST',
   SUBGRAPH_QUERY = 'SUBGRAPH_QUERY',

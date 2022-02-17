@@ -11,3 +11,5 @@ export const accountExplorer = (network: string) => (address: string) =>
 
 export const transactionUrl = (hash: string) =>
   `https://westend.subscan.io/extrinsic/${hash}`;
+
+export const FAUCET_URL = `https://app.element.io/#/room/#westend_faucet:matrix.org`;

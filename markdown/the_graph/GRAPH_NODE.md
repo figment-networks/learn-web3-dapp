@@ -36,7 +36,7 @@ Attaching to docker_postgres_1, docker_ipfs_1, docker_graph-node_1
 
 ## ✅ Make sure it works
 
-The same way that a local web server usually listens for connections on `localhost://3000`, our local Graph node is listening for connections on `localhost://8020`.
+The same way that a local web server usually listens for connections on `localhost:3000`, our local Graph node is listening for connections on `localhost:8020`.
 
 Click on the button **Test local Graph node** to make sure it's running!
 

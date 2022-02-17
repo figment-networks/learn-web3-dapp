@@ -26,7 +26,7 @@ pub fn process_instruction(
 ) -> ProgramResult {
     msg!("Hello World Rust program entrypoint");
 
-    // Iterating accounts is safer then indexing
+    // Iterating accounts is safer than indexing
     let accounts_iter = &mut accounts.iter();
 
     // Get the account to say hello to

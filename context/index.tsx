@@ -7,18 +7,9 @@ import {
   CHAINS,
   StepType,
   PROTOCOL_STEPS_ID,
-  PROTOCOL_INNER_STATES_ID,
-  NETWORKS,
-  PROTOCOLS,
   InnerStateT,
 } from 'types';
-import {
-  getChainId,
-  getStepId,
-  getSteps,
-  getFirstStepId,
-  isCompletedStep,
-} from 'utils/context';
+import {getChainId, getStepId, isCompletedStep} from 'utils/context';
 
 type StepsReducerHelperT = {
   index: number;
@@ -26,7 +17,7 @@ type StepsReducerHelperT = {
 };
 
 const stepsReducerHelper = (
-  {index, data}: {index: number; data: ProtocolStepsT},
+  {index, data}: StepsReducerHelperT,
   step: StepType,
 ): StepsReducerHelperT => {
   const id = step.id;
@@ -86,7 +77,7 @@ const protocolsReducerHelper = (
   return protocolsData;
 };
 
-const buildInitialState = (): ProtocolsStateT => {
+export const buildInitialState = (): ProtocolsStateT => {
   return Object.keys(CHAINS_CONFIG).reduce(
     (protocolsData, chainId) =>
       protocolsReducerHelper(protocolsData, chainId as CHAINS),
@@ -94,18 +85,7 @@ const buildInitialState = (): ProtocolsStateT => {
   );
 };
 
-// Deprecated
-const clearStepProgression = (steps: ProtocolStepsT): ProtocolStepsT => {
-  return Object.keys(steps).reduce((steps, stepId) => {
-    const step = steps[stepId as PROTOCOL_STEPS_ID];
-    const isOneColumn = step.isOneColumn;
-    const isSkippable = step.isSkippable;
-    step.isCompleted = isOneColumn || isSkippable;
-    return steps;
-  }, steps);
-};
-
-const initialGlobalState = {
+export const initGlobalState = {
   currentChainId: undefined,
   protocols: buildInitialState(),
 };
@@ -124,47 +104,12 @@ export type Action =
       type: 'SetSharedState';
       values: any[];
       isCompleted?: boolean;
-    }
-  // Deprecated
-  | {type: 'SetChainNetwork'; chainId: CHAINS; network: NETWORKS}
-  // Deprecated
-  | {type: 'SetChainProtocol'; chainId: CHAINS; protocol: PROTOCOLS}
-  // Deprecated
-  | {
-      type: 'SetChainCurrentStepId';
-      chainId: CHAINS;
-      currentStepId: PROTOCOL_STEPS_ID;
-    }
-  // Deprecated
-  | {
-      type: 'SetStepIsCompleted';
-      chainId: CHAINS;
-      stepId: PROTOCOL_STEPS_ID;
-      value: boolean;
-    }
-  // Deprecated
-  | {
-      type: 'ClearStepProgression';
-      chainId: CHAINS;
-    }
-  // Deprecated
-  | {
-      type: 'Clear';
-    }
-  // Deprecated
-  | {
-      type: 'SetNetwork';
-      network: NETWORKS;
-    }
-  // Deprecated
-  | {
-      type: 'SetStepInnerState';
-      chainId: CHAINS;
-      innerStateId: PROTOCOL_INNER_STATES_ID;
-      value: string | null;
     };
 
-function globalStateReducer(state: GlobalStateT, action: Action): GlobalStateT {
+export function globalStateReducer(
+  state: GlobalStateT,
+  action: Action,
+): GlobalStateT {
   const getKey = (field: any) => Object.keys(field)[0];
   const getValue = (field: any) => Object.values(field)[0];
 
@@ -258,291 +203,21 @@ function globalStateReducer(state: GlobalStateT, action: Action): GlobalStateT {
         },
       };
     }
-
-    // Deprecated
-    case 'Clear': {
-      const newSteps = clearStepProgression(getSteps(state));
-      const chainId = getChainId(state);
-      const firstStepId = getFirstStepId(state);
-      return {
-        ...state,
-        protocols: {
-          ...state.protocols,
-          [chainId]: {
-            ...state.protocols[chainId],
-            steps: newSteps,
-            currentStepId: firstStepId,
-            innerState: null,
-          },
-        },
-      };
-    }
-
-    // Deprecated
-    case 'SetChainCurrentStepId':
-      return {
-        ...state,
-        protocols: {
-          ...state.protocols,
-          [action.chainId]: {
-            ...state.protocols[action.chainId],
-            currentStepId: action.currentStepId,
-          },
-        },
-      };
-
-    // Deprecated
-    case 'SetChainNetwork':
-      return {
-        ...state,
-        protocols: {
-          ...state.protocols,
-          [action.chainId]: {
-            ...state.protocols[action.chainId],
-            network: action.network,
-          },
-        },
-      };
-
-    // Deprecated
-    case 'SetNetwork': {
-      const chainId = getChainId(state);
-
-      return {
-        ...state,
-        protocols: {
-          ...state.protocols,
-          [chainId]: {
-            ...state.protocols[chainId],
-            network: action.network,
-          },
-        },
-      };
-    }
-
-    // Deprecated
-    case 'SetChainProtocol':
-      return {
-        ...state,
-        protocols: {
-          ...state.protocols,
-          [action.chainId]: {
-            ...state.protocols[action.chainId],
-            protocol: action.protocol,
-          },
-        },
-      };
-
-    // Deprecated
-    case 'SetStepIsCompleted':
-      return {
-        ...state,
-        protocols: {
-          ...state.protocols,
-          [action.chainId]: {
-            ...state.protocols[action.chainId],
-            steps: {
-              ...state.protocols[action.chainId].steps,
-              [action.stepId]: {
-                ...state.protocols[action.chainId].steps[action.stepId],
-                isCompleted: action.value,
-              },
-            },
-          },
-        },
-      };
-
-    // Deprecated
-    case 'ClearStepProgression': {
-      const newSteps = clearStepProgression(getSteps(state));
-      const firstStepId = getFirstStepId(state);
-      return {
-        ...state,
-        protocols: {
-          ...state.protocols,
-          [action.chainId]: {
-            ...state.protocols[action.chainId],
-            steps: newSteps,
-            currentStepId: firstStepId,
-          },
-        },
-      };
-    }
-
-    // Deprecated
-    case 'SetStepInnerState':
-      return {
-        ...state,
-        protocols: {
-          ...state.protocols,
-          [action.chainId]: {
-            ...state.protocols[action.chainId],
-            innerState: {
-              ...state.protocols[action.chainId].innerState,
-              [action.innerStateId]: action.value,
-            },
-          },
-        },
-      };
-
     default:
       return state;
   }
 }
 
-// Global State function, upmost level
-// Deprecated
-export const getCurrentChainId = (state: GlobalStateT) => {
-  return state.currentChainId as CHAINS;
-};
-
-// Current chain function
-// Deprecated
-export const getLabelForCurrentChain = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  return state.protocols[chainId].label;
-};
-// Deprecated
-export const getNetworkForCurrentChain = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  return state.protocols[chainId].network;
-};
-// Deprecated
-export const getCurrentStepIdForCurrentChain = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  return state.protocols[chainId].currentStepId;
-};
-// Deprecated
-export const getStepsForCurrentChain = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  return state.protocols[chainId].steps;
-};
-// Deprecated
-export const getFirstStepIdForCurrentChain = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  return state.protocols[chainId].firstStepId;
-};
-// Deprecated
-export const getLastStepIdForCurrentChain = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  return state.protocols[chainId].lastStepId;
-};
-
-// Current Step Id function
-// Deprecated
-export const getNextStepId = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  const currentStepId = getCurrentStepIdForCurrentChain(state);
-  const nextStepId = state.protocols[chainId].steps[currentStepId].nextStepId;
-  return nextStepId ? nextStepId : getLastStepIdForCurrentChain(state);
-};
-// Deprecated
-export const getPreviousStepId = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  const currentStepId = getCurrentStepIdForCurrentChain(state);
-  const previousStepId =
-    state.protocols[chainId].steps[currentStepId].previousStepId;
-  return previousStepId ? previousStepId : getFirstStepIdForCurrentChain(state);
-};
-// Deprecated
-export const getNextStepForCurrentStepId = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  const nextStepId = getNextStepId(state);
-  return nextStepId === null
-    ? null
-    : state.protocols[chainId].steps[nextStepId];
-};
-// Deprecated
-export const getPreviousStepForCurrentStepId = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  const previousStep = getPreviousStepId(state);
-  return previousStep === null
-    ? null
-    : state.protocols[chainId].steps[previousStep];
-};
-// Deprecated
-export const getTitleForCurrentStepId = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  const currentStepId = getCurrentStepIdForCurrentChain(state);
-  return state.protocols[chainId].steps[currentStepId].title;
-};
-// Deprecated
-export const getPositionForCurrentStepId = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  const currentStepId = getCurrentStepIdForCurrentChain(state);
-  return state.protocols[chainId].steps[currentStepId].position;
-};
-// Deprecated
-export const getIsCompletedForCurrentStepId = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  const currentStepId = getCurrentStepIdForCurrentChain(state);
-  return state.protocols[chainId].steps[currentStepId].isCompleted;
-};
-// Deprecated
-export const getIsSkippableForCurrentStepId = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  const currentStepId = getCurrentStepIdForCurrentChain(state);
-  return state.protocols[chainId].steps[currentStepId].isSkippable;
-};
-// Deprecated
-export const getIsOneColumn = (state: GlobalStateT) => {
-  const chainId = getCurrentChainId(state);
-  const currentStepId = getCurrentStepIdForCurrentChain(state);
-  return state.protocols[chainId].steps[currentStepId].isOneColumn;
-};
-// Deprecated
-export const isFirstStepForCurrentStepId = (state: GlobalStateT) => {
-  return (
-    getCurrentStepIdForCurrentChain(state) ===
-    getFirstStepIdForCurrentChain(state)
-  );
-};
-// Deprecated
-export const isConnectionStep = (state: GlobalStateT) => {
-  return (
-    getCurrentStepIdForCurrentChain(state) ===
-    PROTOCOL_STEPS_ID.CHAIN_CONNECTION
-  );
-};
-// Deprecated
-export const isLastStepForCurrentStepId = (state: GlobalStateT) => {
-  return (
-    getCurrentStepIdForCurrentChain(state) ===
-    getLastStepIdForCurrentChain(state)
-  );
-};
-// Deprecated
-export const isCompletedForCurrentStepId = (state: GlobalStateT) => {
-  const isCompleted =
-    getIsSkippableForCurrentStepId(state) ||
-    getIsCompletedForCurrentStepId(state);
-  return isCompleted;
-};
-
-// Inner state functions
-// Deprecated
-export const getChainInnerState = (
-  state: GlobalStateT,
-  chainId: CHAINS,
-  stateId: PROTOCOL_INNER_STATES_ID,
-) => {
-  return state.protocols[chainId].innerState?.[stateId] as string | null;
-};
-// Deprecated
-export const getChainInnerStates = (state: GlobalStateT): InnerStateT => {
-  const chainId = getCurrentChainId(state);
-  return state.protocols[chainId].innerState ?? ({} as InnerStateT);
-};
-
 //-------------------------------------------------
-const GlobalContext = createContext<{
+export const GlobalContext = createContext<{
   state: GlobalStateT;
   dispatch: Dispatch<Action>;
 }>({
-  state: initialGlobalState,
+  state: {
+    currentChainId: undefined,
+    protocols: buildInitialState(),
+  },
   dispatch: () => null,
 });
 
-const useGlobalState = () => useContext(GlobalContext);
-
-export {GlobalContext, initialGlobalState, globalStateReducer, useGlobalState};
+export const useGlobalState = () => useContext(GlobalContext);

@@ -17,7 +17,7 @@ In `pages/api/polkadot/balance.ts`, implement the function and try to query the 
     const url = getNodeUrl(network);
     provider = new WsProvider(url);
     const api = await ApiPromise.create({ provider: provider });
-    const { data: balance } = undefined;
+    const { data: { free } }  = undefined;
     const amount = undefined;
     await provider.disconnect();
     res.status(200).json(amount);
@@ -43,8 +43,8 @@ Still not sure how to do this? No problem! The solution is below so you don't ge
     const url = getNodeUrl(network);
     provider = new WsProvider(url);
     const api = await ApiPromise.create({ provider: provider });
-    const { data: balance } = await api.query.system.account(address);
-    const amount = balance.free.toNumber();
+    const { data: { free } } = await api.query.system.account(address);
+    const amount = free.toNumber();
     res.status(200).json(amount);
   }
 //...

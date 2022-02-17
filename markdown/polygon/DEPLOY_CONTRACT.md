@@ -126,14 +126,28 @@ If there is an error : `Error: Cannot find module '@truffle/hdwallet-provider'`.
 # ⛓ Deploy the smart contract
 
 {% hint style="tip" %}
-Before we deploy, there is one last thing to prepare. Put the secret recovery phrase \(also known as a mnemonic seed phrase\) of the active Metamask account into the file **`contracts/polygon/SimpleStorage/.secret`**.  
+Before we deploy, there is one last thing to prepare: Paste the private key of your funded Polygon address into **`contracts/polygon/SimpleStorage/.secret`** so that the deployment can be paid for with MATIC tokens from that address. You can also use the secret recovery phrase \(also known as a mnemonic seed phrase\) of the active Metamask account, however this method is not recommended as it could potentially result in your seed phrase being leaked. The private key grants access to only one account, while the seed phrase grants access to all accounts derived from it.  
 {% endhint %}
 
-It should look like this, with all 12 words on a single line, no quotation marks :
+To access the private key of the account you funded with MATIC earlier in the pathway, open Metamask and click on the three dots in the upper right portion of the window. Click on "Account details", and then click the "Export Private Key" button - You'll need to enter your MetaMask password to be able to view the private key. Check the image below for details if you're not sure what this should look like.
+
+![How to get your private key from MetaMask](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/polygon/privatekey.png)
+
+If using a private key in `contracts/polygon/SimpleStorage/.secret` it should look like this, 64 alphanumeric characters on a single line with no quotation marks :
+
+```text
+4c247d15a6437be984d6df3a792e74c107a247bd0ad44b685bc3bdcaf183a8fe
+```
+
+You will also notice in `contracts/polygon/SimpleStorage/truffle-config.js` that the configuration parameter for using a mnemonic with the `HDWalletProvider` has been commented out by default. Be sure to uncomment it if you intend to use your secret recovery phrase!
+
+If using a secret recovery phrase (mnemonic) in `contracts/polygon/SimpleStorage/.secret` it should look like this, all 12 words on a single line with no quotation marks :
 
 ```text
 airport battle cargo daughter educate focus green honey immune jelly kick language
 ```
+
+---
 
 Compiling Solidity with Truffle is a straightforward process, just make sure that your preferred configuration is set in `truffle-config.js` \(paths, compilers, networks, etc.\) and then run the command:
 
@@ -149,7 +163,7 @@ truffle migrate --network matic
 
 The flag `--network matic` lets Truffle know which network we want to deploy our migrations to. The configuration for each network is set inside of `truffle-config.js`.
 
-For this step to work, we will also need to make sure there is a valid secret recovery phrase inside of the `.secret` file, and that the account has some MATIC tokens. If you have followed the tutorial steps so far, these conditions should be satisfied.
+For the deployment to work, make sure there is a valid private key or secret recovery phrase inside of the `.secret` file, and that the account has some MATIC tokens. If you have followed the tutorial steps so far, these conditions should be satisfied.
 
 ---
 
@@ -163,7 +177,7 @@ The ABI is considered an "[artifact](https://trufflesuite.github.io/artifact-upd
 
 # ✅ Make sure it works
 
-Once the contract compiled and deployed, paste the contract address and click to **Check deployment**.
+Once the contract is compiled and deployed, paste the contract address into the textinput on the right side of this page and click to **Check deployment**. This will execute the `getCode` method available to the provider to ensure that there is a deployed contract at the specified address.
 
 ---
 

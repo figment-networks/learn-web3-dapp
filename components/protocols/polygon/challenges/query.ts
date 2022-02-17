@@ -18,7 +18,7 @@ const query = async () => {
     const blockInfo = undefined;
 
     if (!chainId || !blockHeight || !gasPriceAsGwei || !blockInfo) {
-      throw new Error('Please Complete the code');
+      throw new Error('Please complete the code');
     }
 
     return {

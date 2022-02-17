@@ -26,7 +26,8 @@
       "@figment-secret/*": ["components/protocols/secret/*"],
       "@figment-solana/*": ["components/protocols/solana/*"],
       "@figment-tezos/*": ["components/protocols/tezos/*"],
-      "@figment-the-graph/*": ["components/protocols/the_graph/*"]
+      "@figment-the-graph/*": ["components/protocols/the_graph/*"],
+      "@figment-the-graph-near/*": ["components/protocols/the_graph_near/*"]
     },
     "incremental": true
   },

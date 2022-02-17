@@ -1,6 +1,7 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 const fs = require('fs');
-const mnemonic = fs.readFileSync('.secret').toString().trim();
+// const mnemonic = fs.readFileSync('.secret').toString().trim();
+const privateKey = fs.readFileSync('.secret').toString().trim();
 
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
@@ -14,7 +15,7 @@ module.exports = {
           enabled: true,
           runs: 200, // Optimize for how many times you intend to run the code
         },
-        evmVersion: 'istanbul', // Default: "istanbul" - will soon be forking to london
+        evmVersion: 'istanbul', // Default: "istanbul"
       },
     },
   },
@@ -32,9 +33,13 @@ module.exports = {
     matic: {
       provider: () =>
         new HDWalletProvider({
-          mnemonic: {
-            phrase: mnemonic,
-          },
+          // As per the documentation at https://github.com/trufflesuite/truffle/tree/develop/packages/hdwallet-provider#general-usage
+          // "If both mnemonic and private keys are provided, the mnemonic is used."
+          // Therefore, uncomment the following lines to use a mnemonic instead of a private key:
+          // mnemonic: {
+          //   phrase: mnemonic,
+          // },
+          privateKeys: [privateKey],
           providerOrUrl: `https://matic-mumbai.chainstacklabs.com`,
           chainId: 80001,
         }),

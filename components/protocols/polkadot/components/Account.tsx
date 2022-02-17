@@ -5,9 +5,9 @@ import axios from 'axios';
 import {PROTOCOL_INNER_STATES_ID} from 'types';
 import {useGlobalState} from 'context';
 
-const {Text} = Typography;
+import {FAUCET_URL} from '@figment-polkadot/lib';
 
-const FAUCET_URL = `https://app.element.io/#/room/#westend_faucet:matrix.org`;
+const {Text} = Typography;
 
 const Account = () => {
   const {dispatch} = useGlobalState();
