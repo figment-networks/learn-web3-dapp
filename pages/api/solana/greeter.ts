@@ -74,7 +74,7 @@ export default async function greeter(
         space: GREETING_SIZE,
         programId,
       }
-    ));
+    ),);
 
     // Complete this function call with the expected arguments.
     const hash = await sendAndConfirmTransaction(connection, transaction, [payer]);
