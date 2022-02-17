@@ -73,8 +73,8 @@ export default async function greeter(
         lamports,
         space: GREETING_SIZE,
         programId,
-      }
-    ),);
+      }),
+      );
 
     // Complete this function call with the expected arguments.
     const hash = await sendAndConfirmTransaction(connection, transaction, [payer]);
