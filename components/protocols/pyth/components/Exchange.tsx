@@ -30,6 +30,7 @@ import {
 } from '@figment-pyth/lib/wallet';
 import * as Rx from 'rxjs';
 import {DevnetPriceRatio} from './DevnetPriceRatio';
+import {SwapResult} from '@figment-pyth/lib/swap';
 
 const connection = new Connection(
   clusterApiUrl(PYTH_NETWORKS.DEVNET),
@@ -288,6 +289,7 @@ const Exchange = () => {
               prefix="%"
             />
             <InputNumber
+              // @ts-ignore
               value={orderSizeUSDC}
               onChange={(e) => setOrderSizeUSDC(e)}
               prefix="USDC"
@@ -418,6 +420,7 @@ const Exchange = () => {
             rowKey={(order: Order & SwapResult) =>
               `order-${order.timestamp}-${order?.txIds.join('-')}`
             }
+            // @ts-ignore
             dataSource={orderBook}
             columns={[
               {

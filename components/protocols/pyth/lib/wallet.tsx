@@ -43,14 +43,15 @@ export const useExtendedWallet = (
   const [keyPair, setKeyPair] = useState<Keypair>(Keypair.generate());
   useEffect(() => {
     if (secretKey) {
-      let array = Uint8Array.from(bs58.decode(secretKey));
-      const key = Keypair.fromSecretKey(array);
-      setKeyPair(key);
+      let array = undefined;
+      const key = undefined;
+      // setKeyPair(key);
       // The line above must be uncommented for the page to work.
       // We have it commented by default because when the value of
       // key is undefined, the page will break when it loads.
     } else {
-      const temp = Keypair.generate(); // The mock uses a random keypair to be able to get real market data.
+      // The mock uses a random keypair to be able to get real market data.
+      const temp = Keypair.generate();
       setKeyPair(temp);
     }
   }, [secretKey]);

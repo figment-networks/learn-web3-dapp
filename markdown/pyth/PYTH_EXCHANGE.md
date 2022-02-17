@@ -46,11 +46,13 @@ const addOrder = useCallback(
 
 # 🪂 Getting an airdrop on Solana devnet
 
-{% hint style="tip" %}
-If you already know how to fund your wallet with an airdrop, go ahead and get some SOL (more is better, but make sure to have at least 2 SOL for testing the liquidation bot).
-{% endhint %}
+If you already know how to fund your wallet with an airdrop, go ahead and get some SOL. More is better, but make sure to have at least 2 SOL for testing the liquidation bot.
 
-At this point you will need to acquire some SOL to perform swaps on devnet. The simplest way to do this is by visiting [solfaucet.com](https://solfaucet.com/). Copy the public key of your keypair, and paste it into the textarea on the faucet site. Click on the "Devnet" button and in a few seconds, you will have some SOL to play with on devnet. You can airdrop **a maximum of 2 SOL per request** using this method. Larger amounts will simply not work, if you view the transaction on the block explorer, you will see a Memo written to the blockchain that says (for example) `request too large; req: ◎10, cap: ◎2`.
+At this point you will need to acquire some SOL to perform swaps on devnet. The simplest way to do this is by visiting [solfaucet.com](https://solfaucet.com/). Copy the public key of your keypair, and paste it into the textarea on the faucet site. Click on the "Devnet" button and in a few seconds, you will have some SOL to play with on devnet.
+
+{% hint style="tip" %}
+You can airdrop **a maximum of 2 SOL per request** using this method. Larger amounts will simply not work, if you view the transaction on the block explorer, you will see a Memo written to the blockchain that says (for example): `request too large; req: ◎10, cap: ◎2`.
+{% endhint %}
 
 ![SolFaucet Example](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/pyth/sol_faucet.png?raw=true)
 
@@ -208,6 +210,8 @@ export interface SwapResult {
   inAmount: number;
   outAmount: number;
   txIds: string[];
+  error?: any;
+  timestamp: number; // Unix timestamp
 }
 ```
 
@@ -256,69 +260,56 @@ The class constructor defines the `Keypair` and `Connection` as both _public_ an
 // components/protocola/pyth/lib/swap.ts
 
   /**
-   * @param size - The amount of token to swap;
-   * @returns - TxIds, inAmount, outAmount
+   * @param size The amount of token to swap;
+   * @returns TxIds, inAmount, outAmount
    */
   async sell(size: number): Promise<SwapResult> {
-    console.log(`Current keypair has
-      ${
-        (await this.connection.getBalance(this.keypair.publicKey)) /
-        LAMPORTS_PER_SOL
-      } SOL`);
-
     const orca = getOrca(this.connection, Network.DEVNET);
-
     const orcaSOLPool = orca.getPool(OrcaPoolConfig.ORCA_SOL);
     const solToken = orcaSOLPool.getTokenB();
-    const solAmount = new Decimal(0.1);
-
+    const solAmount = new Decimal(size);
     const orcaUSDCPool = orca.getPool(OrcaPoolConfig.ORCA_USDC);
     const orcaToken = orcaSOLPool.getTokenA();
     const usdcToken = orcaUSDCPool.getTokenB();
-
-    const orcaAmountD = new Decimal(0.1);
-    const usdcAmountD = new Decimal(0.1);
-
+    // Setting slippage lower is not recommended as it can cause swaps to fail
     const slippage = new Decimal(5.0);
 
+    // Swap SOL -> ORCA
     const quote1 = await orcaSOLPool.getQuote(solToken, solAmount, slippage);
-    const quote2 = await orcaUSDCPool.getQuote(
-      orcaToken,
-      orcaAmountD,
-      slippage,
-    );
-
-    const orcaAmount = quote1.getMinOutputAmount();
-    const usdcAmount = quote2.getMinOutputAmount();
-
+    const orcaQuoteAmount = quote1.getMinOutputAmount();
     console.log(
-      `Swap ${solAmount.toString()} SOL for at least ${orcaAmount.toNumber()} ORCA`,
+      `Swap ${solAmount.toString()} SOL for at least ${orcaQuoteAmount.toNumber()} ORCA`,
     );
     const swapPayload = await orcaSOLPool.swap(
       this.keypair,
       solToken,
       solAmount,
-      orcaAmount,
+      orcaQuoteAmount,
     );
     const swap1TxId = await swapPayload.execute();
-    console.log('Signature:', swap1TxId, '\n');
 
+    // Swap ORCA -> USDC
+    const quote2 = await orcaUSDCPool.getQuote(
+      orcaToken,
+      orcaQuoteAmount,
+      slippage,
+    );
+    const usdcQuoteAmount = quote2.getMinOutputAmount();
     console.log(
-      `Swap ${orcaAmountD.toString()} ORCA for at least ${usdcAmount.toNumber()} USDC`,
+      `Swap ${orcaQuoteAmount.toNumber()} ORCA for at least ${usdcQuoteAmount.toNumber()} USDC`,
     );
     const swap2Payload = await orcaUSDCPool.swap(
       this.keypair,
       orcaToken,
-      usdcAmountD,
-      usdcAmount,
+      orcaQuoteAmount,
+      usdcQuoteAmount,
     );
     const swap2TxId = await swap2Payload.execute();
-    console.log('Signature:', swap2TxId, '\n');
 
     return {
       txIds: [swap1TxId, swap2TxId],
       inAmount: solAmount.toNumber() * SOL_DECIMAL,
-      outAmount: usdcAmount.toNumber() * USDC_DECIMAL,
+      outAmount: usdcQuoteAmount.toNumber() * USDC_DECIMAL,
     } as SwapResult;
   }
 ```
@@ -783,9 +774,9 @@ In `components/protocols/pyth/components/Exchange.tsx`, finish implementing the 
 
 **Need some help?** Check out these hints 👇
 
-- Remember the `Order` object and its properties. This is what you'll need to return here
-- You'll definitely want to sell SOL for USDC and buy SOL with USDC
-- It's important to multiply your values by the order size
+- Remember the `Order` object and its properties. This is what you'll need to return here.
+- You'll definitely want to **sell** SOL _for_ USDC and **buy** SOL _with_ USDC
+- `orderSizeSupposedTo` is guarding against placing orders which are too large for the bot to afford, but the `orderSize` itself is what the bot will use
 
 Still not sure how to do this? No problem! The solution is below so you don't get stuck.
 

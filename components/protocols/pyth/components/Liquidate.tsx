@@ -34,7 +34,7 @@ import {
   useExtendedWallet,
   Order,
 } from '@figment-pyth/lib/wallet';
-import {SwapResult} from '@figment-pyth/lib/swap';
+// import {SwapResult} from '@figment-pyth/lib/swap';
 import _ from 'lodash';
 import * as Rx from 'rxjs';
 import {DevnetPriceRatio} from './DevnetPriceRatio';
@@ -215,7 +215,7 @@ const Liquidate = () => {
 
   /**
    *  You will recognize the getPythData function from the first step of the pathway, with some additions.
-   *  The getPythData hook is where we are calculating our Exponential Moving Average.
+   *  getPythData is where we are calculating our Exponential Moving Average.
    *
    */
   const [data, setData] = useState<any[]>([]);
@@ -497,6 +497,7 @@ const Liquidate = () => {
             rowKey={(order: Order & SwapResult) =>
               `order-${order.timestamp}-${order?.txIds.join('-')}`
             }
+            // @ts-ignore
             dataSource={orderBook}
             columns={[
               {

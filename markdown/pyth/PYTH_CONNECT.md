@@ -91,7 +91,9 @@ The price, confidence interval and exponent will be displayed in the component o
 # 🏋️ Challenge
 
 {% hint style="tip" %}
-In `components/protocols/pyth/components/Connect.tsx`, implement `getPythData` by creating an instance of the `PythConnection` class and then registering the `onPriceChange` callback. You must replace the instances of `undefined` with working code to accomplish this. We don't want you to be overwhelmed by price data for every available product, so we have narrowed it down to SOL/USD for the purposes of this tutorial.
+In `components/protocols/pyth/components/Connect.tsx`, implement `getPythData` by creating an instance of the `PythConnection` class and then registering the `onPriceChange` callback. You must replace the instances of `undefined` with working code to accomplish this. \
+\
+_We don't want you to be overwhelmed by price data for every available product, so we have narrowed it down to SOL/USD for the purposes of this tutorial._
 {% endhint %}
 
 **Take a few minutes to figure this out**
@@ -105,7 +107,7 @@ const pythConnection = undefined;
 const Connect = () => {
   // ...
   const getPythData = async (checked: boolean) => {
-    pythConnection.onPriceChange((product, price) => {
+    undefined.onPriceChange((product, price) => {
       if (
         product.symbol === 'Crypto.SOL/USD' &&
         price.price &&

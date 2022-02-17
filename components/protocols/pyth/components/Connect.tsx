@@ -17,8 +17,8 @@ import {PYTH_NETWORKS, SOLANA_NETWORKS} from 'types/index';
 const {Title} = Typography;
 
 const connection = new Connection(clusterApiUrl(SOLANA_NETWORKS.DEVNET));
-const pythPublicKey = getPythProgramKeyForCluster(PYTH_NETWORKS.DEVNET);
-const pythConnection = new PythConnection(connection, pythPublicKey);
+const pythPublicKey = undefined;
+const pythConnection = undefined;
 
 const Connect = () => {
   const {state, dispatch} = useGlobalState();
@@ -38,7 +38,7 @@ const Connect = () => {
   }, [price, setPrice]);
 
   const getPythData = async (checked: boolean) => {
-    pythConnection.onPriceChange((product, price) => {
+    undefined.onPriceChange((product, price) => {
       if (
         product.symbol === 'Crypto.SOL/USD' &&
         price.price &&
