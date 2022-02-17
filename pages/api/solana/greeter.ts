@@ -49,7 +49,7 @@ export default async function greeter(
     const GREETING_SEED = 'hello';
 
     // Are there any methods from PublicKey to derive a public key from a seed?
-    const greetedPubkey = await PublicKey.undefined;
+    const greetedPubkey = await PublicKey.createWithSeed();
 
     // This function calculates the fees we have to pay to keep the newly
     // created account alive on the blockchain. We're naming it lamports because
@@ -60,10 +60,10 @@ export default async function greeter(
 
     // Find which instructions are expected and complete SystemProgram with
     // the required arguments.
-    const transaction = new Transaction().add(SystemProgram.undefined);
+    const transaction = new Transaction().add(SystemProgram.createAccountWithSeed());
 
     // Complete this function call with the expected arguments.
-    const hash = await sendAndConfirmTransaction(undefined);
+    const hash = await sendAndConfirmTransaction(transaction);
     res.status(200).json({
       hash: hash,
       greeter: greetedPubkey.toBase58(),
