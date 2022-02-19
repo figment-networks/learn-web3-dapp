@@ -2,6 +2,7 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import {Connection, PublicKey} from '@solana/web3.js';
 import {getNodeURL} from '@figment-solana/lib';
 import * as borsh from 'borsh';
+import {Greeter} from '@figment-solana/components';
 
 // The state of a greeting account managed by the hello world program
 class GreetingAccount {
@@ -35,13 +36,17 @@ export default async function getter(
     }
 
     // Find the expected parameters.
-    const greeting = borsh.deserialize(undefined);
+    const greeting = borsh.deserialize(
+      GreetingSchema,
+      GreetingAccount,
+      accountInfo.data,
+    );
 
     // A little helper
     console.log(greeting);
 
     // Pass the counter to the client-side as JSON
-    res.status(200).json(undefined);
+    res.status(200).json(greeting.counter);
   } catch (error) {
     let errorMessage = error instanceof Error ? error.message : 'Unknown Error';
     console.log(errorMessage);
