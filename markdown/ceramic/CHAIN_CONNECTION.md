@@ -6,7 +6,7 @@ Metamask is a crypto wallet which is available as a browser extension. In order 
 
 If you’ve played around with Web 3 dApps you're probably familiar with those “Connect” buttons which allow you to connect your wallet like MetaMask to dApp that you currently are view. They're always at the top right of a web page, in the same place where Web 2.0 websites usually put Login/Signup buttons. We're going to get started by allowing users to connect their Ethereum account to the webpage, through Metamask.
 
-Imagine this scenario: You're a fresh Web3 developer who just landed a sweet role at a promising new startup, eager to show off your skills. You've been asked to show users of our dApp which network they are connected to (to avoid any confusion) and store the account currently selected address in Metamask (so that we can reference it later).
+Imagine this scenario: You're a fresh Web3 developer who just landed a sweet role at a promising new startup, eager to show off your skills. You've been asked to show users of our dApp which network they are connected to (to avoid any confusion) and store the address of the account currently selected in Metamask (so that we can reference it later).
 
 # 🧑🏼‍💻 Challenge
 

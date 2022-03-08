@@ -15,7 +15,7 @@ _It is important to note that throughout the Pathway, we will refer to the_ ethe
 # 🏋️ Challenge
 
 {% hint style="tip" %}
-**Imagine this scenario:** You're a fresh Web3 developer who just landed a sweet role at a promising new startup, eager to show off your skills. You've been asked to show users of our dApp which network they are connected to (to avoid any confusion) and store the account currently selected address in Metamask (so that we can reference it later). In **`components/protocols/polygon/challenge/connect.ts`**, implement the`connect` function.
+**Imagine this scenario:** You're a fresh Web3 developer who just landed a sweet role at a promising new startup, eager to show off your skills. You've been asked to show users of our dApp which network they are connected to (to avoid any confusion) and store the address of the account currently selected in Metamask (so that we can reference it later). In **`components/protocols/polygon/challenge/connect.ts`**, implement the`connect` function.
 {% endhint %}
 
 **Take a few minutes to figure this out.**
