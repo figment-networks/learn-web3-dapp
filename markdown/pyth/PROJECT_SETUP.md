@@ -62,7 +62,7 @@ Click "Create New App":
 
 ![DataHub API keys Image 1](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/dh_api_1.png?raw=true)
 
-Type in a name for your app, select the **Staging** environment, then click on the **Solana** icon in the list of available protocols. \
+Type in a name for your app, select the **Staging** environment, then click on the **Pyth** icon in the list of available protocols. \
 Click "Create app" when you're finished:
 
 ![DataHub API keys Image 2](https://raw.githubusercontent.com/figment-networks/learn-web3-dapp/main/markdown/__images__/dh_api_2.png?raw=true)
