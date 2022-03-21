@@ -6,11 +6,12 @@ declare let window: {
 
 const connect = async () => {
   try {
-    const provider = undefined;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+
     if (provider) {
-      await undefined;
-      const signer = undefined;
-      const address = undefined;
+      await provider.send('eth_requestAccounts', []); //this method requests for a user to connect his metamask
+      const signer = provider.getSigner(); //represents the current account
+      const address = await signer.getAddress(); //gets address of current account
       return {
         address,
       };
