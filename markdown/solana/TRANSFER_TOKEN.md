@@ -2,6 +2,8 @@ In order to transfer some value to another account, we need to create and send a
 
 When a transaction is submitted to the **cluster**, the Solana runtime will execute a program to process each of the instructions contained in the transaction, in order, and atomically. This means that if any of the instructions fail for any reason, the entire transaction will revert.
 
+when you are transferring lamports make sure it begins with **0.**. so for example **0.2** otherwise transaction will give you an error
+
 ---
 
 # 🏋️ Challenge
