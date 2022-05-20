@@ -21,7 +21,7 @@ cd docker
 ETHEREUM_RPC=mainnet:https://ethereum-mainnet--rpc.datahub.figment.io/apikey/<YOUR_DATAHUB_API_KEY> docker-compose up
 ```
 
-Remember to add your DataHub API key to the end of the URL displayed above by replacing the text `YOUR_DATAHUB_API_KEY>` before you run the command. You should see a bunch of white and blue commands and then the following:
+Remember to add your DataHub API key to the end of the URL displayed above by replacing the text `<YOUR_DATAHUB_API_KEY>` before you run the command. You should see a bunch of white and blue commands and then the following:
 
 ```text
 Starting docker_ipfs_1     ... done
