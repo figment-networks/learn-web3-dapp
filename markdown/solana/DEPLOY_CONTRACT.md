@@ -130,7 +130,7 @@ source $HOME/.cargo/env
 [**Install the Solana CLI**](https://docs.solana.com/cli/install-solana-cli-tools):
 
 ```text
-sh -c "$(curl -sSfL https://release.solana.com/v1.8.5/install)"
+sh -c "$(curl -sSfL https://release.solana.com/v1.10.25/install)"
 ```
 
 ---
