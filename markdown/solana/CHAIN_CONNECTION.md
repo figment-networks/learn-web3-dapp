@@ -29,7 +29,7 @@ In `pages/api/solana/connect.ts`, implement `connect` by creating a `Connection`
 **Need some help?** Check out these links 👇
 
 - [Creating a `Connection` instance](https://solana-labs.github.io/solana-web3.js/classes/Connection.html#constructor)
-- [Getting the API `version`](https://solana-labs.github.io/solana-web3.js/classes/Connection.html#getversion)
+- [Getting the API `version`](https://solana-labs.github.io/solana-web3.js/classes/Connection.html#getVersion)
 
 Still not sure how to do this? No problem! The solution is below so you don't get stuck.
 
