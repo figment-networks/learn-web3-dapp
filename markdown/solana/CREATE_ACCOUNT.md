@@ -21,7 +21,7 @@ const secret = JSON.stringify(Array.from(keypair.secretKey));
 **Need some help?** Check out these links 👇
 
 - [Generate a `Keypair`](https://solana-labs.github.io/solana-web3.js/classes/Keypair.html#constructor)
-- [Convert a `PublicKey` to a string](https://solana-labs.github.io/solana-web3.js/classes/PublicKey.html#tostring)
+- [Convert a `PublicKey` to a string](https://solana-labs.github.io/solana-web3.js/classes/PublicKey.html#toString)
 
 Still not sure how to do this? No problem! The solution is below so you don't get stuck.
 
