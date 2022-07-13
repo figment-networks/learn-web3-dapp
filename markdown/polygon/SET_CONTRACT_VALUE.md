@@ -54,7 +54,7 @@ const setValue = async (contractAddress: string, value: number) => {
       SimpleStorageJson.abi,
       signer,
     );
-    const transactionResult = await contract.set(value);
+    const transactionResult = await contract.set(value, {gasLimit: 500000});
     const receipt = await transactionResult.wait();
     return {hash: receipt.transactionHash};
   } catch (error) {
@@ -72,6 +72,7 @@ const setValue = async (contractAddress: string, value: number) => {
   - The contract JSON's ABI.
   - A signer, from the ethers web3 provider.
 - We then call the function `set` on this Contract object to operate on our decentralized code. The names of the functions must match the ones we defined in our Solidity smart contract. These are available via the ABI.
+- Note: Remember to add an override in the `set` contract call for the `gasLimit` to avoid an issue with transactions reverting!
 
 ---
 

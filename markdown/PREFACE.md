@@ -41,4 +41,4 @@ If you experience any difficulty in using the Pathway or want to talk about Web 
 
 ## 👣 Next Steps
 
-Click on the **Next** button below to continue with the Pathway.
+Click on the **Next** (or **Setup the project**) button below to continue with the Pathway.
