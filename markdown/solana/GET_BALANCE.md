@@ -28,7 +28,7 @@ In `pages/api/solana/balance.ts`, implement `publicKey` & `balance`.
 
 **Need some help?** Check out these links 👇
 
-- [Read about getBalance](https://solana-labs.github.io/solana-web3.js/classes/Connection.html#getbalance)
+- [Read about getBalance](https://solana-labs.github.io/solana-web3.js/classes/Connection.html#getBalance)
 - [Create a publicKey from a string](https://solana-labs.github.io/solana-web3.js/classes/PublicKey.html#constructor)
 
 Still not sure how to do this? No problem! The solution is below so you don't get stuck.

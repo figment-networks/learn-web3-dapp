@@ -37,7 +37,7 @@ In `pages/api/solana/fund.ts`, implement the `fund` function. Convert the addres
 **Need some help?** Check out these links 👇
 
 - [Create a publicKey from a string](https://solana-labs.github.io/solana-web3.js/classes/PublicKey.html#constructor)
-- [`requestAirdrop` documentation](https://solana-labs.github.io/solana-web3.js/classes/Connection.html#requestairdrop)
+- [`requestAirdrop` documentation](https://solana-labs.github.io/solana-web3.js/classes/Connection.html#requestAirdrop)
 
 Still not sure how to do this? No problem! The solution is below so you don't get stuck.
 
